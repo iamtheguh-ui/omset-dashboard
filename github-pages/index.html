@@ -1,0 +1,3790 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#060a12">
+  <title>Omset Realtime · Cab Medan Raya</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b1322'/%3E%3Cpath d='M8 22V10M8 22h16M12 18l4-5 3 3 4-6' stroke='%2322d3a7' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <style>
+:root {
+  --bg: #060a12;
+  --bg-soft: #0a111d;
+  --panel: rgba(13, 21, 36, 0.78);
+  --panel-solid: #0b1322;
+  --line: rgba(148, 163, 184, 0.13);
+  --line-strong: rgba(148, 163, 184, 0.24);
+  --text: #e8eefb;
+  --muted: #8fa1bb;
+  --dim: #64748b;
+  --accent: #22d3a7;
+  --accent-2: #38bdf8;
+  --violet: #a78bfa;
+  --amber: #fbbf24;
+  --rose: #fb7185;
+  --radius: 18px;
+  --shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
+  --font: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(circle at 50% 0%, #000 0%, transparent 78%);
+  z-index: 0;
+}
+
+.ambient {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+.ambient-a {
+  width: 620px;
+  height: 620px;
+  top: -280px;
+  left: -160px;
+  background: radial-gradient(circle, rgba(34, 211, 167, 0.18), transparent 68%);
+}
+.ambient-b {
+  width: 720px;
+  height: 720px;
+  top: -320px;
+  right: -260px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.14), transparent 68%);
+}
+
+.hidden { display: none !important; }
+.muted { color: var(--muted); }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+strong { font-weight: 650; }
+
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+
+:focus-visible {
+  outline: 2px solid rgba(56, 189, 248, 0.75);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ topbar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px clamp(16px, 3vw, 36px);
+  background: rgba(6, 10, 18, 0.78);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.brand { display: flex; align-items: center; gap: 13px; min-width: 0; }
+
+.brand-mark {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: #052e26;
+  background: linear-gradient(145deg, #4adec0, #22d3a7 55%, #0ea5e9);
+  box-shadow: 0 8px 26px rgba(34, 211, 167, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+.brand-mark svg { width: 23px; height: 23px; }
+
+.brand-text h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+.brand-text p {
+  margin: 2px 0 0;
+  font-size: 11.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dot-sep { color: var(--dim); margin: 0 2px; }
+
+.topbar-actions { display: flex; align-items: center; gap: 18px; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  padding: 0 11px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.badge-live {
+  color: #6ee7c6;
+  background: rgba(34, 211, 167, 0.1);
+  border-color: rgba(34, 211, 167, 0.28);
+}
+.badge-cache {
+  color: #fcd34d;
+  background: rgba(251, 191, 36, 0.09);
+  border-color: rgba(251, 191, 36, 0.28);
+}
+.badge-demo {
+  color: #c4b5fd;
+  background: rgba(167, 139, 250, 0.1);
+  border-color: rgba(167, 139, 250, 0.28);
+}
+.badge-error {
+  color: #fda4af;
+  background: rgba(251, 113, 133, 0.1);
+  border-color: rgba(251, 113, 133, 0.28);
+}
+.pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 0 currentColor;
+  animation: pulse 2s infinite;
+}
+.badge-cache .pulse, .badge-error .pulse { animation: none; opacity: 0.75; }
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(110, 231, 198, 0.55); }
+  70% { box-shadow: 0 0 0 7px rgba(110, 231, 198, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(110, 231, 198, 0); }
+}
+
+.sync-block { display: flex; flex-direction: column; gap: 1px; }
+.sync-label {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.sync-block strong {
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: var(--muted);
+  background: rgba(148, 163, 184, 0.07);
+  border: 1px solid var(--line);
+  transition: color 0.18s, background 0.18s, border-color 0.18s, transform 0.18s;
+}
+.btn-icon svg { width: 17px; height: 17px; }
+.btn-icon:hover { color: var(--text); background: rgba(148, 163, 184, 0.13); border-color: var(--line-strong); }
+.btn-icon:active { transform: scale(0.96); }
+.btn-icon.spinning svg { animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* -------------------------------------------------------------------- page */
+.page {
+  position: relative;
+  z-index: 1;
+  width: min(1520px, 100%);
+  margin: 0 auto;
+  padding: 22px clamp(14px, 2.6vw, 32px) 34px;
+}
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 11px 15px;
+  border-radius: 13px;
+  border: 1px solid;
+  font-size: 12.5px;
+  line-height: 1.5;
+  animation: fade-in 0.3s ease both;
+}
+.alert svg { width: 16px; height: 16px; flex: 0 0 auto; margin-top: 1px; }
+.alert-info { color: #a5e4fb; background: rgba(56, 189, 248, 0.07); border-color: rgba(56, 189, 248, 0.22); }
+.alert-warn { color: #fde68a; background: rgba(251, 191, 36, 0.07); border-color: rgba(251, 191, 36, 0.22); }
+.alert-error { color: #fecdd3; background: rgba(251, 113, 133, 0.07); border-color: rgba(251, 113, 133, 0.22); }
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  margin: 40px auto 24px;
+  padding: 42px 24px;
+  max-width: 560px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+.error-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--rose);
+  background: rgba(251, 113, 133, 0.1);
+  border: 1px solid rgba(251, 113, 133, 0.25);
+}
+.error-icon svg { width: 24px; height: 24px; }
+.error-state h2 { margin: 8px 0 0; font-size: 18px; }
+.error-state p { margin: 0; color: var(--muted); font-size: 13px; max-width: 420px; }
+
+.btn-primary {
+  margin-top: 14px;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 10px;
+  color: #04251f;
+  background: linear-gradient(135deg, #5eead4, #22d3a7);
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 8px 22px rgba(34, 211, 167, 0.2);
+}
+.btn-primary:hover { filter: brightness(1.06); }
+
+/* --------------------------------------------------------------------- KPI */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.kpi {
+  position: relative;
+  min-width: 0;
+  padding: 15px 16px 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background:
+    linear-gradient(160deg, rgba(30, 41, 59, 0.55), rgba(11, 19, 34, 0.72));
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+  animation: fade-up 0.45s ease both;
+}
+.kpi:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+
+.kpi-primary {
+  background:
+    radial-gradient(130% 160% at 100% 0%, rgba(34, 211, 167, 0.19), transparent 55%),
+    linear-gradient(155deg, rgba(20, 78, 68, 0.55), rgba(10, 20, 34, 0.9) 62%);
+  border-color: rgba(34, 211, 167, 0.3);
+}
+.kpi-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: linear-gradient(180deg, #5eead4, rgba(34, 211, 167, 0.1));
+}
+.kpi-danger {
+  background:
+    radial-gradient(130% 160% at 100% 0%, rgba(251, 113, 133, 0.12), transparent 55%),
+    linear-gradient(155deg, rgba(55, 24, 34, 0.42), rgba(11, 19, 34, 0.85) 62%);
+  border-color: rgba(251, 113, 133, 0.22);
+}
+
+.kpi-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.kpi-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.kpi-icon { color: var(--dim); display: grid; place-items: center; }
+.kpi-icon svg { width: 16px; height: 16px; }
+
+.kpi-chip {
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6ee7c6;
+  background: rgba(34, 211, 167, 0.1);
+  border: 1px solid rgba(34, 211, 167, 0.2);
+  white-space: nowrap;
+}
+.kpi-chip-danger {
+  color: #fda4af;
+  background: rgba(251, 113, 133, 0.09);
+  border-color: rgba(251, 113, 133, 0.2);
+}
+
+.kpi-value {
+  margin-top: 7px;
+  font-size: clamp(21px, 1.65vw, 27px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kpi-sub {
+  margin-top: 3px;
+  font-size: 10.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kpi-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  font-size: 10px;
+  color: #94a3b8;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.kpi-delta { color: var(--accent); font-weight: 650; }
+
+.kpi-spark {
+  position: absolute;
+  right: 0;
+  bottom: 34px;
+  left: 0;
+  height: 34px;
+  opacity: 0.65;
+  pointer-events: none;
+}
+.kpi-spark svg { width: 100%; height: 100%; display: block; }
+
+.kpi-progress {
+  height: 5px;
+  margin-top: 9px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.13);
+  overflow: hidden;
+}
+.kpi-progress-fill {
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #0ea5e9, #22d3a7);
+  transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kpi-progress-fill.warn { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.kpi-progress-fill.bad { background: linear-gradient(90deg, #e11d48, #fb7185); }
+
+/* ------------------------------------------------------------------ layout */
+.layout-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: start;
+}
+.side-stack { display: grid; gap: 16px; min-width: 0; }
+.side-stack.side-stack-single { grid-template-columns: minmax(0, 1fr); }
+
+.panel {
+  min-width: 0;
+  padding: 19px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(165deg, rgba(20, 30, 48, 0.62), rgba(9, 15, 27, 0.82));
+  box-shadow: var(--shadow);
+  animation: fade-up 0.5s ease both;
+}
+.panel-table { padding-bottom: 10px; }
+
+.panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.panel-head.compact { margin-bottom: 12px; }
+.panel-head-wrap { flex-wrap: wrap; }
+.panel-head h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.panel-head p {
+  margin: 2px 0 0;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+.panel-tag {
+  flex: 0 0 auto;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  background: rgba(148, 163, 184, 0.07);
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- depo bars */
+.depo-list { display: grid; }
+.depo-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.9fr) minmax(160px, 2.4fr) 74px;
+  gap: 16px;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.depo-row:last-child { border-bottom: 0; padding-bottom: 2px; }
+.depo-id { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.depo-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.08);
+}
+.depo-name {
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.depo-meta { font-size: 9.5px; color: var(--dim); white-space: nowrap; }
+
+.depo-bar-wrap { min-width: 0; }
+.depo-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.11);
+  overflow: hidden;
+}
+.depo-fill {
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.depo-values {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 5px;
+  font-size: 9.5px;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+.depo-values span:first-child { color: #cbd5e1; font-weight: 600; }
+.depo-pct {
+  text-align: right;
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.depo-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.depo-summary-item {
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(148, 163, 184, 0.035);
+  border: 1px solid rgba(148, 163, 184, 0.08);
+}
+.depo-summary-item span {
+  display: block;
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.depo-summary-item strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.depo-summary-item:last-child strong { color: var(--amber); }
+.depo-pct.good { color: var(--accent); }
+.depo-pct.warn { color: var(--amber); }
+.depo-pct.bad { color: var(--rose); }
+.depo-pct.neutral { color: var(--muted); }
+
+/* -------------------------------------------------------------------- donut */
+.donut-wrap { display: grid; place-items: center; padding: 4px 0 14px; }
+.donut {
+  position: relative;
+  width: 164px;
+  height: 164px;
+  border-radius: 50%;
+  background: conic-gradient(rgba(148, 163, 184, 0.14) 0 100%);
+  transition: background 0.5s ease;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+.donut-hole {
+  position: absolute;
+  inset: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #0a1220;
+  border: 1px solid rgba(148, 163, 184, 0.09);
+}
+.donut-hole strong {
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.donut-hole span {
+  margin-top: 4px;
+  font-size: 8.5px;
+  font-weight: 650;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.legend { display: grid; gap: 1px; }
+.legend-row {
+  display: grid;
+  grid-template-columns: 9px 1fr auto;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 0;
+  font-size: 11px;
+  border-bottom: 1px dashed rgba(148, 163, 184, 0.09);
+}
+.legend-row:last-child { border-bottom: 0; }
+.legend-dot { width: 7px; height: 7px; border-radius: 50%; }
+.legend-label { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.legend-label span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #cbd5e1;
+}
+.legend-excluded {
+  flex: 0 0 auto;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fda4af;
+  background: rgba(251, 113, 133, 0.1);
+}
+.legend-value {
+  color: var(--muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.legend-value strong { color: #e2e8f0; font-weight: 650; }
+
+/* -------------------------------------------------------------------- trend */
+.trend-delta {
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(34, 211, 167, 0.08);
+  border: 1px solid rgba(34, 211, 167, 0.18);
+  white-space: nowrap;
+}
+.trend-delta.negative { color: var(--rose); background: rgba(251, 113, 133, 0.08); border-color: rgba(251, 113, 133, 0.18); }
+.trend-chart { height: 96px; margin: 2px 0 4px; }
+.trend-chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.panel-trend-wide { margin-bottom: 16px; }
+.panel-trend-wide .trend-chart-wide { height: 122px; margin: 4px 0 2px; }
+.panel-trend-wide .trend-foot { margin-top: 4px; }
+.panel-trend-wide .trend-placeholder p { padding: 8px 14px; }
+.trend-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 9.5px;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+.trend-note {
+  margin: 8px 0 0;
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--dim);
+}
+.trend-placeholder {
+  position: relative;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.trend-placeholder svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.trend-placeholder p {
+  position: relative;
+  margin: 0;
+  padding: 7px 11px;
+  border-radius: 9px;
+  text-align: center;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+  background: rgba(10, 18, 32, 0.78);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+.trend-placeholder p span { color: var(--dim); font-size: 9px; }
+
+/* -------------------------------------------------------------------- table */
+.table-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search svg {
+  position: absolute;
+  left: 10px;
+  width: 14px;
+  height: 14px;
+  color: var(--dim);
+  pointer-events: none;
+}
+.search input {
+  width: 205px;
+  height: 34px;
+  padding: 0 12px 0 31px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: rgba(148, 163, 184, 0.05);
+  color: var(--text);
+  font-size: 11.5px;
+  transition: border-color 0.18s, background 0.18s;
+}
+.search input::placeholder { color: var(--dim); }
+.search input:focus { outline: none; border-color: rgba(56, 189, 248, 0.4); background: rgba(148, 163, 184, 0.08); }
+
+.select {
+  height: 34px;
+  padding: 0 26px 0 10px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: rgba(148, 163, 184, 0.05);
+  color: #cbd5e1;
+  font-size: 11.5px;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--dim) 50%), linear-gradient(135deg, var(--dim) 50%, transparent 50%);
+  background-position: calc(100% - 13px) 14px, calc(100% - 9px) 14px;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+}
+.select:focus { outline: none; border-color: rgba(56, 189, 248, 0.4); }
+
+.table-scroll { overflow: auto; max-height: 620px; scrollbar-width: thin; scrollbar-color: rgba(148, 163, 184, 0.25) transparent; }
+.table-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.table-scroll::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.22); border-radius: 99px; }
+.table-scroll::-webkit-scrollbar-track { background: transparent; }
+
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 11.5px;
+}
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  background: #0b1423;
+  border-bottom: 1px solid var(--line-strong);
+  white-space: nowrap;
+}
+.data-table thead th.num { text-align: right; }
+.data-table thead th button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+.data-table thead th button:hover { color: #cbd5e1; }
+.data-table thead th button.active { color: var(--accent); }
+.data-table thead th button.active::after {
+  content: "";
+  display: inline-block;
+  margin-left: 4px;
+  border: 3px solid transparent;
+  border-top-color: currentColor;
+  vertical-align: 1px;
+}
+.data-table thead th button.active.asc::after {
+  border-top-color: transparent;
+  border-bottom-color: currentColor;
+  vertical-align: -2px;
+}
+.data-table tbody td {
+  padding: 9px 10px;
+  border-bottom: 1px dashed rgba(148, 163, 184, 0.1);
+  vertical-align: middle;
+}
+.data-table tbody tr { transition: background 0.15s; }
+.data-table tbody tr:hover { background: rgba(148, 163, 184, 0.035); }
+.data-table tbody tr:last-child td { border-bottom: 0; }
+.data-table td.num { font-variant-numeric: tabular-nums; }
+
+.table-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 10px;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.person { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.avatar {
+  width: 29px;
+  height: 29px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  font-size: 9.5px;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  color: var(--person-color, #94a3b8);
+  background: color-mix(in srgb, var(--person-color, #94a3b8) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--person-color, #94a3b8) 25%, transparent);
+}
+.person-name {
+  font-size: 11.5px;
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+.person-sub { font-size: 9px; color: var(--dim); white-space: nowrap; }
+.cancel-chip,
+.swap-chip {
+  margin-left: 5px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-size: 8px;
+  font-weight: 700;
+}
+.cancel-chip {
+  color: #fda4af;
+  background: rgba(251, 113, 133, 0.09);
+}
+.swap-chip {
+  color: #fcd34d;
+  background: rgba(251, 191, 36, 0.09);
+}
+
+.pct-cell { display: flex; align-items: center; gap: 8px; min-width: 104px; }
+.mini-track {
+  width: 54px;
+  height: 4px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.13);
+  overflow: hidden;
+}
+.mini-fill { height: 100%; border-radius: inherit; background: var(--accent); transition: width 0.6s ease; }
+.mini-fill.warn { background: var(--amber); }
+.mini-fill.bad { background: var(--rose); }
+.pct-text { font-size: 10.5px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pct-text.good { color: var(--accent); }
+.pct-text.warn { color: var(--amber); }
+.pct-text.bad { color: var(--rose); }
+.pct-text.neutral { color: var(--muted); }
+.ec-value { font-size: 11px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.ec-value .muted { font-size: 9px; font-weight: 400; }
+
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 650;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.badge-status::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+.badge-status.billing { color: #34d399; background: rgba(34, 211, 167, 0.08); border-color: rgba(34, 211, 167, 0.18); }
+.badge-status.new { color: #7dd3fc; background: rgba(56, 189, 248, 0.08); border-color: rgba(56, 189, 248, 0.18); }
+.badge-status.swap { color: #c4b5fd; background: rgba(167, 139, 250, 0.08); border-color: rgba(167, 139, 250, 0.18); }
+.badge-status.cancel { color: #fda4af; background: rgba(251, 113, 133, 0.08); border-color: rgba(251, 113, 133, 0.18); }
+.badge-status.other { color: #fcd34d; background: rgba(251, 191, 36, 0.08); border-color: rgba(251, 191, 36, 0.18); }
+
+.table-compact { font-size: 11px; }
+.table-compact tbody td { padding: 8px 10px; }
+.table-compact .person-name { max-width: 150px; }
+.cell-mono { font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace; font-size: 10px; color: var(--muted); }
+.cell-strong { font-weight: 650; color: #f1f5f9; }
+.row-excluded { opacity: 0.62; }
+.row-excluded .cell-strong { text-decoration: line-through; text-decoration-color: rgba(251, 113, 133, 0.6); }
+
+/* ----------------------------------------------------------------- customer */
+.customer-list { list-style: none; margin: 0; padding: 0; }
+.customer-item {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(148, 163, 184, 0.1);
+}
+.customer-item:last-child { border-bottom: 0; padding-bottom: 1px; }
+.rank {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--dim);
+  background: rgba(148, 163, 184, 0.06);
+}
+.rank.top { color: #04251f; background: linear-gradient(135deg, #5eead4, #22d3a7); }
+.customer-main { min-width: 0; }
+.customer-name {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.customer-sub { font-size: 8.5px; color: var(--dim); white-space: nowrap; }
+.customer-value {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #d1fae5;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------- cancel */
+.btn-link {
+  padding: 3px 0;
+  border: 0;
+  background: none;
+  color: var(--accent-2);
+  font-size: 9.5px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.btn-link:hover { text-decoration: underline; }
+.cancel-list { display: grid; }
+.cancel-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(148, 163, 184, 0.1);
+}
+.cancel-item:last-child { border-bottom: 0; padding-bottom: 1px; }
+.cancel-main { min-width: 0; }
+.cancel-customer {
+  font-size: 10.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cancel-meta { font-size: 8.5px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cancel-value {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #fda4af;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.empty-inline {
+  padding: 14px 0;
+  font-size: 10.5px;
+  color: var(--dim);
+  text-align: center;
+  list-style: none;
+}
+
+/* --------------------------------------------------------------- supervisor */
+.supervisor-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+.sup-card {
+  padding: 13px 14px;
+  border-radius: 13px;
+  border: 1px solid var(--line);
+  background: rgba(148, 163, 184, 0.035);
+  border-top: 2px solid var(--sup-color, var(--line-strong));
+}
+.sup-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.sup-name {
+  font-size: 10.5px;
+  font-weight: 650;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sup-depo { margin-top: 2px; font-size: 8.5px; color: var(--dim); white-space: nowrap; }
+.sup-pct {
+  font-size: 14px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.sup-pct.good { color: var(--accent); }
+.sup-pct.warn { color: var(--amber); }
+.sup-pct.bad { color: var(--rose); }
+.sup-pct.neutral { color: var(--muted); }
+.sup-track {
+  height: 4px;
+  margin: 9px 0 7px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.13);
+  overflow: hidden;
+}
+.sup-fill { height: 100%; border-radius: inherit; background: var(--sup-color, var(--accent)); transition: width 0.7s ease; }
+.sup-fill.good { background: linear-gradient(90deg, #0d9488, #22d3a7); }
+.sup-fill.warn { background: linear-gradient(90deg, #b45309, #fbbf24); }
+.sup-fill.bad { background: linear-gradient(90deg, #be123c, #fb7185); }
+.sup-fill.neutral { background: linear-gradient(90deg, #475569, #64748b); }
+.sup-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 8.5px;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+.sup-foot strong { color: #cbd5e1; font-weight: 600; }
+
+.manager-card {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 14px 17px;
+  border-radius: 14px;
+  border: 1px solid rgba(34, 211, 167, 0.24);
+  background:
+    radial-gradient(120% 200% at 100% 0%, rgba(34, 211, 167, 0.14), transparent 55%),
+    linear-gradient(120deg, rgba(17, 54, 49, 0.55), rgba(10, 18, 32, 0.75));
+}
+.manager-id { display: flex; align-items: center; gap: 10px; min-width: 190px; }
+.manager-avatar {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: #04251f;
+  background: linear-gradient(135deg, #5eead4, #22d3a7);
+  font-size: 11px;
+  font-weight: 800;
+}
+.manager-name { font-size: 12.5px; font-weight: 700; }
+.manager-role { font-size: 9px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+.manager-stat { display: flex; flex-direction: column; gap: 1px; min-width: 105px; }
+.manager-stat span { font-size: 8.5px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.07em; }
+.manager-stat strong { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.manager-stat strong.good { color: var(--accent); }
+.manager-stat strong.warn { color: var(--amber); }
+.manager-stat strong.bad { color: var(--rose); }
+.manager-bar { flex: 1 1 160px; min-width: 120px; }
+.manager-track { height: 5px; border-radius: 999px; background: rgba(148, 163, 184, 0.14); overflow: hidden; }
+.manager-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #0ea5e9, #22d3a7); }
+.manager-bar small { display: block; margin-top: 5px; font-size: 8.5px; color: var(--dim); font-variant-numeric: tabular-nums; }
+
+/* -------------------------------------------------------------------- modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 6, 12, 0.72);
+  backdrop-filter: blur(6px);
+}
+.modal-card {
+  position: relative;
+  width: min(920px, 100%);
+  max-height: min(84vh, 760px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  border: 1px solid var(--line-strong);
+  background: #0a1322;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.55);
+  animation: modal-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+  overflow: hidden;
+}
+.modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--line);
+}
+.modal-head h2 { margin: 0; font-size: 15px; }
+.modal-head p { margin: 3px 0 0; font-size: 10.5px; color: var(--muted); }
+.modal-head p strong { color: #fda4af; }
+.modal-scroll { max-height: calc(84vh - 92px); padding: 0 20px 16px; }
+
+/* ------------------------------------------------------------------- footer */
+.page-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 9.5px;
+  color: var(--dim);
+}
+.page-foot > div { display: flex; align-items: center; gap: 7px; }
+.foot-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+.foot-rule { flex: 1 1 320px; justify-content: center; text-align: center; }
+.foot-rule svg { width: 13px; height: 13px; flex: 0 0 auto; color: var(--accent-2); }
+.foot-rule strong { color: #cbd5e1; font-weight: 650; }
+.foot-updated { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ----------------------------------------------------------------- skeleton */
+.skeleton-row, .skeleton-card {
+  background: linear-gradient(100deg, rgba(148, 163, 184, 0.05) 20%, rgba(148, 163, 184, 0.11) 38%, rgba(148, 163, 184, 0.05) 56%);
+  background-size: 240% 100%;
+  animation: shimmer 1.5s linear infinite;
+  border-radius: 10px;
+}
+.skeleton-row { height: 45px; margin-bottom: 9px; }
+.skeleton-card { height: 118px; }
+.table-loading { padding: 28px 10px; text-align: center; font-size: 11px; color: var(--dim); }
+
+@keyframes shimmer { to { background-position: -140% 0; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes modal-in { from { opacity: 0; transform: translateY(10px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+/* ------------------------------------------------------------------ responsive */
+@media (max-width: 1380px) {
+  .kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .supervisor-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .kpi-value { font-size: 25px; }
+}
+
+@media (max-width: 1120px) {
+  .layout-main { grid-template-columns: minmax(0, 1fr); }
+  .side-stack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .panel-donut, .panel-trend { min-height: 100%; }
+  .table-scroll { max-height: 520px; }
+}
+
+@media (max-width: 900px) {
+  .topbar { flex-wrap: wrap; gap: 12px; }
+  .topbar-actions { width: 100%; justify-content: space-between; gap: 10px; }
+  .sync-block.refresh-block { display: none; }
+  .supervisor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .depo-row { grid-template-columns: minmax(100px, 0.9fr) minmax(140px, 2.2fr) 62px; gap: 10px; }
+}
+
+@media (max-width: 760px) {
+  .page { padding-top: 16px; }
+  .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .kpi { padding: 13px 13px 12px; }
+  .kpi-value { font-size: 22px; }
+  .side-stack { grid-template-columns: minmax(0, 1fr); }
+  .panel { padding: 16px 14px; border-radius: 15px; }
+  .panel-head-wrap { align-items: stretch; }
+  .table-tools { width: 100%; }
+  .search { flex: 1 1 150px; }
+  .search input { width: 100%; }
+  .select { flex: 0 0 auto; }
+  .person-name { max-width: 130px; }
+  .data-table th:nth-child(2), .data-table td:nth-child(2),
+  .data-table th:nth-child(5), .data-table td:nth-child(5),
+  .data-table th:nth-child(6), .data-table td:nth-child(6) { display: none; }
+  .pct-cell { min-width: 82px; }
+  .mini-track { width: 36px; }
+  .supervisor-grid { grid-template-columns: minmax(0, 1fr); }
+  .manager-card { gap: 12px; }
+  .manager-stat { min-width: 84px; }
+  .table-scroll { max-height: 420px; }
+  .page-foot { justify-content: flex-start; }
+  .foot-rule { justify-content: flex-start; text-align: left; }
+}
+
+@media (max-width: 520px) {
+  .brand-mark { width: 36px; height: 36px; border-radius: 11px; }
+  .brand-text h1 { font-size: 16px; }
+  .brand-text p { font-size: 10px; }
+  .topbar { padding: 11px 14px; }
+  .badge { height: 25px; padding: 0 9px; font-size: 9px; }
+  .sync-block strong { font-size: 10.5px; }
+  .kpi-grid { grid-template-columns: minmax(0, 1fr); }
+  .kpi-value { font-size: 24px; }
+  .depo-row { grid-template-columns: minmax(0, 1fr) 58px; }
+  .depo-bar-wrap { grid-column: 1 / -1; grid-row: 2; }
+  .depo-pct { grid-row: 1; grid-column: 2; }
+  .panel-head { flex-wrap: wrap; }
+  .modal { padding: 10px; }
+  .modal-head { padding: 14px; }
+  .modal-scroll { padding: 0 14px 14px; }
+  .modal-head p { font-size: 9.5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+  </style>
+</head>
+<body data-refresh="30" data-demo="0">
+  <div class="ambient ambient-a" aria-hidden="true"></div>
+  <div class="ambient ambient-b" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19V5"/><path d="M4 19h16"/>
+          <path d="M7 15l4-4 3 2 5-6"/>
+          <path d="M16 7h3v3"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Omset Realtime</h1>
+        <p>CAB Medan Raya <span class="dot-sep">·</span> <span id="dataDate">Memuat data…</span></p>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <div class="badge badge-live" id="sourceBadge" title="Status sumber data">
+        <span class="pulse" aria-hidden="true"></span>
+        <span id="sourceText">LIVE</span>
+      </div>
+      <div class="sync-block">
+        <span class="sync-label">Sinkron scraper</span>
+        <strong id="scraperTime">—</strong>
+      </div>
+      <div class="sync-block refresh-block">
+        <span class="sync-label">Refresh dalam</span>
+        <strong id="countdown">—</strong>
+      </div>
+      <button id="refreshBtn" class="btn-icon" type="button" aria-label="Muat ulang data sekarang" title="Muat ulang sekarang">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
+          <path d="M21 3v6h-6"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="page">
+    <div id="alert" class="alert hidden" role="status"></div>
+
+    <div id="errorState" class="error-state hidden" role="alert">
+      <div class="error-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/>
+        </svg>
+      </div>
+      <h2>Data belum bisa dimuat</h2>
+      <p id="errorMessage">Periksa koneksi ke Google Sheets lalu coba lagi.</p>
+      <button id="retryBtn" class="btn-primary" type="button">Coba lagi</button>
+    </div>
+
+    <section class="kpi-grid" aria-label="Ringkasan omset">
+      <article class="kpi kpi-primary">
+        <div class="kpi-top">
+          <span class="kpi-label">Omset</span>
+          <span class="kpi-chip" title="DO non-Cancel, tanpa Swap (ZWE1) dan Return (ZRP1)">Bersih</span>
+        </div>
+        <div class="kpi-value" id="kpiRevenue">—</div>
+        <div class="kpi-sub" id="kpiRevenueSub">Menghitung data…</div>
+        <div class="kpi-spark" id="kpiSpark" aria-hidden="true"></div>
+        <div class="kpi-foot">
+          <span id="kpiRevenueFull">—</span>
+          <span class="kpi-delta" id="kpiRevenueDelta"></span>
+        </div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-top">
+          <span class="kpi-label">Target Harian</span>
+          <span class="kpi-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </span>
+        </div>
+        <div class="kpi-value" id="kpiTarget">—</div>
+        <div class="kpi-sub" id="kpiTargetSub">Target seluruh salesman</div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-top">
+          <span class="kpi-label">Pencapaian</span>
+          <span class="kpi-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M4 17l5-5 3 3 7-8"/><path d="M15 7h4v4"/>
+            </svg>
+          </span>
+        </div>
+        <div class="kpi-value" id="kpiPct">—</div>
+        <div class="kpi-progress"><div class="kpi-progress-fill" id="kpiProgress"></div></div>
+        <div class="kpi-sub" id="kpiPctSub">Realisasi terhadap target</div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-top">
+          <span class="kpi-label">DO Dihitung</span>
+          <span class="kpi-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M5 4h9l5 5v11H5z"/><path d="M14 4v5h5"/><path d="M8 13h7"/><path d="M8 16.5h5"/>
+            </svg>
+          </span>
+        </div>
+        <div class="kpi-value" id="kpiDo">—</div>
+        <div class="kpi-sub" id="kpiDoSub">Total DO hari ini</div>
+      </article>
+
+      <article class="kpi kpi-danger">
+        <div class="kpi-top">
+          <span class="kpi-label">Nilai Dikecualikan</span>
+          <span class="kpi-chip kpi-chip-danger">Tidak dihitung</span>
+        </div>
+        <div class="kpi-value" id="kpiExcluded">—</div>
+        <div class="kpi-sub" id="kpiExcludedSub">Cancel · Swap · Return</div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-top">
+          <span class="kpi-label">Customer</span>
+          <span class="kpi-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.7-5 5.5-5s4.9 1.8 5.5 5"/>
+              <path d="M16 5.5a3 3 0 0 1 0 5.8"/><path d="M17.5 14.2c2 .6 3.2 2.2 3.6 4.8"/>
+            </svg>
+          </span>
+        </div>
+        <div class="kpi-value" id="kpiCustomers">—</div>
+        <div class="kpi-sub" id="kpiCustomersSub">Customer unik dari DO dihitung</div>
+      </article>
+    </section>
+
+    <section class="layout-main">
+      <article class="panel panel-depo">
+        <header class="panel-head">
+          <div>
+            <h2>Performa Depo</h2>
+            <p>Realisasi omset dibanding target harian</p>
+          </div>
+          <span class="panel-tag" id="depoTag">—</span>
+        </header>
+        <div class="depo-list" id="depoList">
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+        </div>
+        <div class="depo-summary">
+          <div class="depo-summary-item">
+            <span>Total target</span>
+            <strong id="depoTotalTarget">—</strong>
+          </div>
+          <div class="depo-summary-item">
+            <span>Realisasi</span>
+            <strong id="depoTotalReal">—</strong>
+          </div>
+          <div class="depo-summary-item">
+            <span>Sisa target</span>
+            <strong id="depoTotalGap">—</strong>
+          </div>
+        </div>
+      </article>
+
+      <div class="side-stack side-stack-single">
+        <article class="panel panel-donut">
+          <header class="panel-head compact">
+            <div>
+              <h2>Status DO</h2>
+              <p>Distribusi seluruh DO</p>
+            </div>
+          </header>
+          <div class="donut-wrap">
+            <div class="donut" id="donut">
+              <div class="donut-hole">
+                <strong id="donutTotal">—</strong>
+                <span>Total DO</span>
+              </div>
+            </div>
+          </div>
+          <div class="legend" id="statusLegend"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel panel-trend-wide">
+      <header class="panel-head compact">
+        <div>
+          <h2>Tren Omset</h2>
+          <p id="trendRange">Snapshot otomatis</p>
+        </div>
+        <span class="trend-delta" id="trendDelta">—</span>
+      </header>
+      <div class="trend-chart trend-chart-wide" id="trendChart"></div>
+      <div class="trend-foot">
+        <span id="trendStart">—</span>
+        <span id="trendNow">—</span>
+      </div>
+    </section>
+
+    <section class="layout-main">
+      <article class="panel panel-table">
+        <header class="panel-head panel-head-wrap">
+          <div>
+            <h2>Performa Salesman</h2>
+            <p id="salesSub">Memuat data…</p>
+          </div>
+          <div class="table-tools">
+            <label class="search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>
+              </svg>
+              <input id="searchInput" type="search" placeholder="Cari nama / kode sales…" autocomplete="off">
+            </label>
+            <select id="depoFilter" class="select" aria-label="Filter depo">
+              <option value="">Semua depo</option>
+            </select>
+          </div>
+        </header>
+        <div class="table-scroll">
+          <table class="data-table" id="salesTable">
+            <thead>
+              <tr>
+                <th><button type="button" data-sort="nama">Salesman</button></th>
+                <th class="num"><button type="button" data-sort="target">Target</button></th>
+                <th class="num"><button type="button" data-sort="real">Realisasi</button></th>
+                <th class="col-pct"><button type="button" data-sort="pct">Capaian</button></th>
+                <th class="num"><button type="button" data-sort="do_count">DO</button></th>
+                <th class="num"><button type="button" data-sort="ec">EC</button></th>
+              </tr>
+            </thead>
+            <tbody id="salesBody">
+              <tr><td colspan="6"><div class="table-loading">Memuat data salesman…</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <footer class="table-foot">
+          <span id="salesCount">—</span>
+          <span class="muted">Klik judul kolom untuk mengurutkan</span>
+        </footer>
+      </article>
+
+      <div class="side-stack">
+        <article class="panel">
+          <header class="panel-head compact">
+            <div>
+              <h2>Top Customer</h2>
+              <p>Berdasarkan omset bersih (non-Cancel/Swap/Return)</p>
+            </div>
+          </header>
+          <ol class="customer-list" id="customerList">
+            <li class="empty-inline">Memuat…</li>
+          </ol>
+        </article>
+
+        <article class="panel panel-cancel">
+          <header class="panel-head compact">
+            <div>
+              <h2>DO Cancel</h2>
+              <p><span id="cancelCount">0</span> DO dikecualikan dari omset</p>
+            </div>
+            <button id="openCancelBtn" class="btn-link" type="button">Lihat semua</button>
+          </header>
+          <div class="cancel-list" id="cancelList">
+            <div class="empty-inline">Memuat…</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel panel-supervisor">
+      <header class="panel-head">
+        <div>
+          <h2>Supervisor &amp; Manager</h2>
+          <p>Akumulasi capaian per wilayah</p>
+        </div>
+        <span class="panel-tag">Tim</span>
+      </header>
+      <div class="supervisor-grid" id="supervisorGrid">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <header class="panel-head">
+        <div>
+          <h2>Transaksi Terbaru</h2>
+          <p>15 DO terakhir yang terbaca dari scraper</p>
+        </div>
+        <span class="panel-tag" id="recentTag">—</span>
+      </header>
+      <div class="table-scroll">
+        <table class="data-table table-compact" id="recentTable">
+          <thead>
+            <tr>
+              <th>No DO</th>
+              <th>Tgl DO</th>
+              <th>Customer</th>
+              <th>Salesman</th>
+              <th>Status</th>
+              <th class="num">Total</th>
+            </tr>
+          </thead>
+          <tbody id="recentBody">
+            <tr><td colspan="6"><div class="table-loading">Memuat transaksi…</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="page-foot">
+      <div>
+        <span class="foot-dot" aria-hidden="true"></span>
+        <span id="footSource">Sumber: Google Sheets · SCRAPING</span>
+      </div>
+      <div class="foot-rule">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8v.01"/>
+        </svg>
+        <span>Omset = DO non-Cancel, tanpa <strong>Swap (ZWE1)</strong> dan <strong>Return (ZRP1)</strong>. Target diambil dari sheet MISI HARIAN.</span>
+      </div>
+      <div class="foot-updated">Server: <span id="serverTime">—</span></div>
+    </footer>
+  </main>
+
+  <div class="modal hidden" id="cancelModal" role="dialog" aria-modal="true" aria-labelledby="cancelModalTitle">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-card">
+      <header class="modal-head">
+        <div>
+          <h2 id="cancelModalTitle">Daftar DO Cancel</h2>
+          <p><span id="modalCancelCount">0</span> DO · nilai <strong id="modalCancelValue">Rp 0</strong> tidak dihitung sebagai omset</p>
+        </div>
+        <button class="btn-icon" type="button" data-close-modal aria-label="Tutup">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M6 6l12 12"/><path d="M18 6L6 18"/>
+          </svg>
+        </button>
+      </header>
+      <div class="table-scroll modal-scroll">
+        <table class="data-table table-compact">
+          <thead>
+            <tr>
+              <th>No DO</th>
+              <th>Customer</th>
+              <th>Salesman</th>
+              <th>Depo</th>
+              <th class="num">Total</th>
+            </tr>
+          </thead>
+          <tbody id="cancelModalBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+/*
+ * Omset Realtime - data layer untuk versi statis (tanpa server).
+ *
+ * File ini membaca Google Sheets langsung dari browser, menghitung ulang
+ * metrik dashboard, lalu menyerahkan payload yang sama seperti /api/dashboard.
+ *
+ * Tidak butuh Python, Flask, Cloudflare, atau domain.
+ */
+(() => {
+  "use strict";
+
+  // =========================================================================
+  // KONFIGURASI - ubah di sini kalau ID sheet / nama tab berubah.
+  // =========================================================================
+  const OMSET_CONFIG = {
+    sheetId: "1ssi1n1H2UhSGsQsBG-dV1lcaWchBSKL9FLNrkpluDOM",
+    scrapingSheet: "SCRAPING",
+    misiSheet: "MISI HARIAN",
+    refreshSeconds: 30,
+    staleAfterMinutes: 25,
+    expectedAccounts: 3,
+    trendBucketMinutes: 5,
+    trendHours: 48,
+  };
+
+  const ACCOUNT_DEPO = {
+    "pmalpm_sa@pinusmerahabadi.co.id": "PMA LUBUK PAKAM",
+    "pmamds_sa@pinusmerahabadi.co.id": "PMA MEDAN SELATAN",
+    "pmamdn_sa@pinusmerahabadi.co.id": "MEDAN RAYA",
+  };
+
+  const GUDANG_DEPO = {
+    P461: "PMA LUBUK PAKAM",
+    P218: "PMA MEDAN SELATAN",
+    P112: "MEDAN RAYA",
+  };
+
+  const STATUS_COLORS = {
+    "billing process": "#22d3a7",
+    new: "#38bdf8",
+    "swap complete": "#a78bfa",
+    cancel: "#fb7185",
+  };
+  const DEFAULT_STATUS_COLOR = "#fbbf24";
+
+  const MONTHS_ID = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+  ];
+  const MONTHS_ID_SHORT = [
+    "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
+    "Jul", "Agu", "Sep", "Okt", "Nov", "Des",
+  ];
+
+  const MASTER_RAW = {
+    depos: [
+      { name: "PMA LUBUK PAKAM", short: "LUBUK PAKAM", color: "#22d3a7" },
+      { name: "PMA MEDAN SELATAN", short: "MEDAN SELATAN", color: "#38bdf8" },
+      { name: "PMA MEDAN TIMUR", short: "MEDAN TIMUR", color: "#a78bfa" },
+      { name: "PMA MEDAN TIMUR1", short: "MEDAN TIMUR1", color: "#fbbf24" },
+      { name: "PMA MEDAN UTARA", short: "MEDAN UTARA", color: "#fb7185" },
+    ],
+    salesmen: [
+      { depo: "PMA LUBUK PAKAM", kd_sls: "199830", nama: "AEPDA-ADAN SAPUTRA", divisi: "SALESMAN" },
+      { depo: "PMA LUBUK PAKAM", kd_sls: "199823", nama: "GDKDA-IRWAN JUNIARDI", divisi: "SALESMAN" },
+      { depo: "PMA LUBUK PAKAM", kd_sls: "199803", nama: "GDKDA-YOGI PRAYUDA", divisi: "SALESMAN" },
+      { depo: "PMA LUBUK PAKAM", kd_sls: "199805", nama: "GDKDA-ANDIKA ERFIAN", divisi: "SALESMAN" },
+      { depo: "PMA LUBUK PAKAM", kd_sls: "199806", nama: "GDKDA-GUSTI KARAN", divisi: "SALESMAN" },
+
+      { depo: "PMA MEDAN SELATAN", kd_sls: "153468", nama: "GDKDA-AHMAD ERWIN", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN SELATAN", kd_sls: "153471", nama: "GDKDA-REZA GANDA SAPUTRA", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN SELATAN", kd_sls: "153466", nama: "AEPDA-RIDHO", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN SELATAN", kd_sls: "153472", nama: "GDKDA-RENDY A PRADANA", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN SELATAN", kd_sls: "153425", nama: "GDKDA-FAISAL AKBAR HSB", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN SELATAN", kd_sls: "153434", nama: "GDKDA-SONI RANU", divisi: "SALESMAN" },
+
+      { depo: "PMA MEDAN TIMUR", kd_sls: "134682", nama: "GDKDA-JUNIARTO", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN TIMUR", kd_sls: "134613", nama: "GDKDA-M SYAWALUDDIN", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN TIMUR", kd_sls: "134675", nama: "AEPDA-IVANSYAH", divisi: "SALESMAN" },
+
+      { depo: "PMA MEDAN TIMUR1", kd_sls: "134680", nama: "GDKDA-AKMAL", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN TIMUR1", kd_sls: "134606", nama: "GDKDA-MHD.RIZKI", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN TIMUR1", kd_sls: "134631", nama: "GDKDA-S PUTRA HASIBUAN", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN TIMUR1", kd_sls: "134679", nama: "GDKDA-HALIMAH", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN TIMUR1", kd_sls: "134681", nama: "GDKDA-HAEKAL RAHMAN", divisi: "SALESMAN" },
+
+      { depo: "PMA MEDAN UTARA", kd_sls: "168847", nama: "GDKDA-SUARA MAHARDIKA", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN UTARA", kd_sls: "168849", nama: "GDKDA-RAAMAN TOBY", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN UTARA", kd_sls: "168843", nama: "AEPDA-WAHYUDI", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN UTARA", kd_sls: "168811", nama: "GDKDA-PUTRA", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN UTARA", kd_sls: "168808", nama: "GDKDA-ADRI", divisi: "SALESMAN" },
+      { depo: "PMA MEDAN UTARA", kd_sls: "168805", nama: "GDKDA-AZRA", divisi: "SALESMAN" },
+    ],
+    supervisors: [
+      { depo: "PMA MEDAN TIMUR", kd_sls: "1001", nama: "ASSDA - JEFRI SAPUTRA", divisi: "SUPERVISOR" },
+      { depo: "PMA MEDAN UTARA", kd_sls: "1002", nama: "ASSDA - ANDRI PRATAMA", divisi: "SUPERVISOR" },
+      { depo: "PMA MEDAN SELATAN", kd_sls: "1003", nama: "ASSDA - RAJA HARI MUKTI", divisi: "SUPERVISOR" },
+      { depo: "PMA LUBUK PAKAM", kd_sls: "1004", nama: "ASSDA - TEGUH PRIHATIN", divisi: "SUPERVISOR" },
+      { depo: "PMA MEDAN TIMUR1", kd_sls: "1006", nama: "ASSDA - HERMAN", divisi: "SUPERVISOR" },
+    ],
+    manager: {
+      depo: "MEDAN RAYA",
+      kd_sls: "1005",
+      nama: "YOHANES",
+      divisi: "MANAGER",
+    },
+  };
+
+  // =========================================================================
+  // Util umum
+  // =========================================================================
+  const clean = (value) => String(value ?? "").trim();
+
+  function normalizeKey(name) {
+    return clean(name).toLowerCase().replace(/[^a-z0-9]/g, "");
+  }
+
+  function looksLikeDo(value) {
+    return clean(value).replace(/\D/g, "").length >= 6;
+  }
+
+  function parseMoney(value) {
+    if (value === null || value === undefined) return 0;
+    if (typeof value === "number") return Math.round(value);
+
+    const raw = clean(value);
+    if (!raw) return 0;
+
+    const negative = raw.startsWith("(") && raw.endsWith(")");
+    let cleaned = raw.replace(/[^\d,.\-]/g, "");
+    if (!cleaned || cleaned === "-" || cleaned === "." || cleaned === ",") return 0;
+
+    if (cleaned.includes(",") && cleaned.includes(".")) {
+      if (cleaned.lastIndexOf(",") > cleaned.lastIndexOf(".")) {
+        cleaned = cleaned.replace(/\./g, "").replace(/,/g, ".");
+      } else {
+        cleaned = cleaned.replace(/,/g, "");
+      }
+    } else if (cleaned.includes(",")) {
+      cleaned = cleaned.replace(/,/g, "");
+    } else if ((cleaned.match(/\./g) || []).length > 1) {
+      cleaned = cleaned.replace(/\./g, "");
+    }
+
+    let number = Number.parseFloat(cleaned);
+    if (!Number.isFinite(number)) return 0;
+    if (negative) number = -number;
+    return Math.round(number);
+  }
+
+  const MONTH_LOOKUP = (() => {
+    const map = {};
+    MONTHS_ID.forEach((name, index) => {
+      map[name.toLowerCase()] = index + 1;
+      map[MONTHS_ID_SHORT[index].toLowerCase()] = index + 1;
+    });
+    ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"].forEach(
+      (name, index) => {
+        map[name] = index + 1;
+      }
+    );
+    [
+      "january", "february", "march", "april", "may", "june",
+      "july", "august", "september", "october", "november", "december",
+    ].forEach((name, index) => {
+      map[name] = index + 1;
+    });
+    map.sept = 9;
+    return map;
+  })();
+
+  const pad2 = (value) => String(value).padStart(2, "0");
+
+  function parseDate(value) {
+    if (value === null || value === undefined) return null;
+    if (value instanceof Date && !Number.isNaN(value.getTime())) {
+      return `${value.getFullYear()}-${pad2(value.getMonth() + 1)}-${pad2(value.getDate())}`;
+    }
+
+    let raw = clean(value);
+    if (!raw) return null;
+    raw = raw.replace(/\s+/g, " ");
+    if (raw.includes("T")) raw = raw.split("T")[0];
+
+    let match = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (match) return `${match[1]}-${pad2(match[2])}-${pad2(match[3])}`;
+
+    match = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (match) return `${match[3]}-${pad2(match[2])}-${pad2(match[1])}`;
+
+    match = raw.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+    if (match) return `${match[3]}-${pad2(match[2])}-${pad2(match[1])}`;
+
+    match = raw.match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/);
+    if (match) {
+      const month = MONTH_LOOKUP[match[2].toLowerCase()];
+      if (month) return `${match[3]}-${pad2(month)}-${pad2(match[1])}`;
+    }
+
+    match = raw.match(/(\d{4})-(\d{2})-(\d{2})/);
+    if (match) return `${match[1]}-${match[2]}-${match[3]}`;
+
+    return null;
+  }
+
+  function parseDatetime(value) {
+    if (value === null || value === undefined) return null;
+    if (value instanceof Date && !Number.isNaN(value.getTime())) {
+      return `${value.getFullYear()}-${pad2(value.getMonth() + 1)}-${pad2(value.getDate())}T${pad2(value.getHours())}:${pad2(value.getMinutes())}:${pad2(value.getSeconds())}`;
+    }
+
+    let raw = clean(value);
+    if (!raw) return null;
+    raw = raw.replace("T", " ").replace(/\.\d+$/, "");
+    raw = raw.replace(/\s+/g, " ");
+
+    let match = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+    if (match) {
+      return `${match[1]}-${pad2(match[2])}-${pad2(match[3])}T${pad2(match[4])}:${pad2(match[5])}:${pad2(match[6] || 0)}`;
+    }
+
+    match = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+    if (match) {
+      return `${match[3]}-${pad2(match[2])}-${pad2(match[1])}T${pad2(match[4])}:${pad2(match[5])}:${pad2(match[6] || 0)}`;
+    }
+
+    return null;
+  }
+
+  function nowIso() {
+    return new Date(Date.now() + 7 * 3600 * 1000).toISOString().slice(0, 19);
+  }
+
+  function minutesSince(isoValue) {
+    if (!isoValue) return null;
+    const time = new Date(`${isoValue}+07:00`).getTime();
+    if (!Number.isFinite(time)) return null;
+    return (Date.now() - time) / 60000;
+  }
+
+  function fmtDateId(isoValue) {
+    if (!isoValue) return "—";
+    const [year, month, day] = isoValue.slice(0, 10).split("-").map(Number);
+    if (!year || !month || !day) return "—";
+    return `${day} ${MONTHS_ID[month - 1]} ${year}`;
+  }
+
+  function fmtDateShortId(isoValue) {
+    if (!isoValue) return "—";
+    const [year, month, day] = isoValue.slice(0, 10).split("-").map(Number);
+    if (!year || !month || !day) return "—";
+    return `${pad2(day)} ${MONTHS_ID_SHORT[month - 1]}`;
+  }
+
+  function fmtDatetimeId(isoValue) {
+    if (!isoValue) return "—";
+    const [year, month, day] = isoValue.slice(0, 10).split("-").map(Number);
+    const time = isoValue.slice(11, 16);
+    if (!year || !month || !day) return "—";
+    return `${day} ${MONTHS_ID_SHORT[month - 1]} ${year} ${time} WIB`;
+  }
+
+  function fmtTimeId(isoValue) {
+    if (!isoValue) return "—";
+    return isoValue.slice(11, 19);
+  }
+
+  // =========================================================================
+  // CSV / gviz
+  // =========================================================================
+  function parseCsv(text) {
+    const source = String(text || "").replace(/^\uFEFF/, "");
+    const rows = [];
+    let row = [];
+    let field = "";
+    let inQuotes = false;
+
+    for (let index = 0; index < source.length; index += 1) {
+      const char = source[index];
+      if (inQuotes) {
+        if (char === '"') {
+          if (source[index + 1] === '"') {
+            field += '"';
+            index += 1;
+          } else {
+            inQuotes = false;
+          }
+        } else {
+          field += char;
+        }
+      } else if (char === '"') {
+        inQuotes = true;
+      } else if (char === ",") {
+        row.push(field);
+        field = "";
+      } else if (char === "\n") {
+        row.push(field);
+        rows.push(row);
+        row = [];
+        field = "";
+      } else if (char !== "\r") {
+        field += char;
+      }
+    }
+
+    if (field.length || row.length) {
+      row.push(field);
+      rows.push(row);
+    }
+
+    return rows.filter((item) => item.some((cell) => clean(cell) !== ""));
+  }
+
+  function gvizTableToRows(payload) {
+    const table = payload && payload.table;
+    if (!table) throw new Error("Struktur data gviz tidak dikenal.");
+    const cols = table.cols || [];
+    const header = cols.map((col) => clean(col && (col.label || col.id)));
+    const rows = [header];
+
+    for (const rawRow of table.rows || []) {
+      const cells = rawRow.c || [];
+      const values = [];
+      for (let index = 0; index < cols.length; index += 1) {
+        const cell = cells[index];
+        if (!cell) {
+          values.push("");
+        } else if (cell.f !== undefined && cell.f !== null) {
+          values.push(String(cell.f));
+        } else if (cell.v !== undefined && cell.v !== null) {
+          values.push(String(cell.v));
+        } else {
+          values.push("");
+        }
+      }
+      rows.push(values);
+    }
+
+    return rows;
+  }
+
+  async function fetchSheetCsv(sheetName, force) {
+    const params = new URLSearchParams({ tqx: "out:csv", sheet: sheetName });
+    params.set("_", String(force ? Date.now() : Math.floor(Date.now() / 15000)));
+    const url = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(OMSET_CONFIG.sheetId)}/gviz/tq?${params.toString()}`;
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 20000);
+
+    try {
+      const response = await fetch(url, {
+        cache: "no-store",
+        credentials: "omit",
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        const error = new Error(`HTTP ${response.status}`);
+        if ([401, 403, 404].includes(response.status)) error.code = "PRIVATE";
+        throw error;
+      }
+
+      const text = await response.text();
+      if (/^\s*<!doctype html/i.test(text) || /<html[\s>]/i.test(text.slice(0, 300))) {
+        const error = new Error(
+          "Sheet tidak dapat dibaca publik. Aktifkan akses 'Anyone with the link'."
+        );
+        error.code = "PRIVATE";
+        throw error;
+      }
+
+      return parseCsv(text);
+    } catch (error) {
+      if (error && error.name === "AbortError") {
+        throw new Error("Waktu habis membaca sheet (20 detik).");
+      }
+      throw error;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  function fetchSheetJsonp(sheetName, force) {
+    return new Promise((resolve, reject) => {
+      if (typeof document === "undefined") {
+        reject(new Error("JSONP hanya tersedia di browser."));
+        return;
+      }
+
+      const script = document.createElement("script");
+      let finished = false;
+
+      const finish = (error, rows) => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timer);
+        delete window.__omsetGvizResponse;
+        if (script.parentNode) script.parentNode.removeChild(script);
+        if (error) reject(error);
+        else resolve(rows);
+      };
+
+      const timer = setTimeout(() => finish(new Error("Waktu habis membaca sheet.")), 25000);
+
+      window.google = window.google || {};
+      window.google.visualization = window.google.visualization || {};
+      window.google.visualization.Query = window.google.visualization.Query || {};
+
+      window.__omsetGvizResponse = (payload) => {
+        try {
+          finish(null, gvizTableToRows(payload));
+        } catch (error) {
+          finish(error);
+        }
+      };
+      window.google.visualization.Query.setResponse = window.__omsetGvizResponse;
+
+      script.onerror = () => finish(new Error("Gagal memuat data sheet (JSONP)."));
+      const params = new URLSearchParams({ tqx: "out:json", sheet: sheetName });
+      params.set("_", String(force ? Date.now() : Math.floor(Date.now() / 15000)));
+      script.src = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(OMSET_CONFIG.sheetId)}/gviz/tq?${params.toString()}`;
+      document.head.appendChild(script);
+    });
+  }
+
+  async function fetchSheetRows(sheetName, force) {
+    try {
+      return await fetchSheetCsv(sheetName, force);
+    } catch (csvError) {
+      // Kalau sheet memang private, JSONP juga tidak akan bisa. Langsung
+      // tampilkan pesan yang jelas daripada menunggu timeout.
+      if (csvError && csvError.code === "PRIVATE") {
+        throw new Error(`${sheetName}: ${csvError.message}`);
+      }
+      try {
+        return await fetchSheetJsonp(sheetName, force);
+      } catch (jsonpError) {
+        const message = csvError && csvError.message ? csvError.message : "Gagal membaca sheet.";
+        throw new Error(`${sheetName}: ${message}`);
+      }
+    }
+  }
+
+  // =========================================================================
+  // Master salesman / depo
+  // =========================================================================
+  function levelFromName(name) {
+    const upper = clean(name).toUpperCase();
+    if (upper.startsWith("AEPDA")) return "AEPDA";
+    if (upper.startsWith("GDKDA")) return "GDKDA";
+    if (upper.startsWith("ASSDA")) return "ASSDA";
+    return "OTHER";
+  }
+
+  function ecTarget(level) {
+    return level === "AEPDA" ? 8 : 25;
+  }
+
+  function getMaster() {
+    const depos = MASTER_RAW.depos.map((item) => ({ ...item }));
+    const depoOrder = depos.map((item) => item.name);
+    const depoMeta = {};
+    for (const item of depos) depoMeta[item.name] = item;
+
+    const salesmen = MASTER_RAW.salesmen.map((item) => {
+      const person = { ...item, kd_sls: clean(item.kd_sls) };
+      person.level = levelFromName(person.nama);
+      person.ec_target = ecTarget(person.level);
+      return person;
+    });
+
+    const supervisors = MASTER_RAW.supervisors.map((item) => ({
+      ...item,
+      kd_sls: clean(item.kd_sls),
+      level: "SUPERVISOR",
+    }));
+
+    const manager = MASTER_RAW.manager
+      ? { ...MASTER_RAW.manager, kd_sls: clean(MASTER_RAW.manager.kd_sls), level: "MANAGER" }
+      : null;
+
+    for (const person of salesmen) {
+      if (!depoMeta[person.depo]) {
+        depoOrder.push(person.depo);
+        depoMeta[person.depo] = {
+          name: person.depo,
+          short: person.depo,
+          color: "#94a3b8",
+        };
+      }
+    }
+
+    const byKd = new Map(salesmen.map((person) => [person.kd_sls, person]));
+    return { depos, depoOrder, depoMeta, salesmen, supervisors, manager, byKd };
+  }
+
+  // =========================================================================
+  // Rules
+  // =========================================================================
+  function exclusionReason(tipe, status) {
+    const tipeKey = clean(tipe).toLowerCase();
+    const statusKey = clean(status).toLowerCase();
+
+    if (statusKey.includes("cancel")) return "Cancel";
+    if (statusKey.includes("swap") || tipeKey.includes("zwe1") || tipeKey.includes("swap")) {
+      return "Swap";
+    }
+    if (tipeKey.includes("zrp1") || tipeKey.includes("return")) return "Return";
+    return null;
+  }
+
+  // =========================================================================
+  // Parser SCRAPING
+  // =========================================================================
+  function parseScrapingRows(rows, master) {
+    if (!rows || !rows.length) return [];
+
+    const header = (rows[0] || []).map(clean);
+    const headerMap = {};
+    header.forEach((name, index) => {
+      const key = normalizeKey(name);
+      if (key) headerMap[key] = index;
+    });
+
+    const headerText = header.join(" ").toLowerCase();
+    const startRow = ["waktu scraping", "no do", "akun pengirim"].some((token) =>
+      headerText.includes(token)
+    )
+      ? 1
+      : 0;
+
+    const records = [];
+
+    for (const raw of rows.slice(startRow)) {
+      if (!raw || !raw.length) continue;
+      const length = raw.length;
+      let noDo;
+      let tipe;
+      let tglDoRaw;
+      let tglKirimRaw;
+      let gudang;
+      let customer;
+      let alamat;
+      let kdSls;
+      let totalRaw;
+      let status;
+      let akun;
+      let waktuRaw;
+
+      if (length >= 12) {
+        let shift = 0;
+        if (!looksLikeDo(raw[3]) && looksLikeDo(raw[2])) shift = 1;
+
+        const cell = (base) => {
+          const index = base - shift;
+          return index >= 0 && index < length ? clean(raw[index]) : "";
+        };
+
+        waktuRaw = cell(0);
+        akun = cell(1);
+        noDo = cell(3);
+        tipe = cell(4);
+        tglDoRaw = cell(5);
+        tglKirimRaw = cell(6);
+        gudang = cell(7);
+        customer = cell(8);
+        alamat = cell(9);
+        kdSls = cell(10);
+        totalRaw = cell(11);
+        status = cell(12);
+      } else if (length >= 8) {
+        const pick = (name, fallback) => {
+          const index = headerMap[name] !== undefined ? headerMap[name] : fallback;
+          return index >= 0 && index < length ? clean(raw[index]) : "";
+        };
+
+        waktuRaw = pick("waktuscraping", 0);
+        akun = pick("akunpengirim", 1);
+        noDo = pick("nodo", 2);
+        tipe = pick("tipe", -1);
+        tglDoRaw = pick("tgldo", 3);
+        tglKirimRaw = pick("tglkirim", -1);
+        gudang = pick("gudang", -1);
+        customer = pick("customer", 4);
+        alamat = pick("alamat", 5);
+        kdSls = pick("kdsls", -1);
+        totalRaw = pick("total", 7);
+        status = pick("status", 6);
+      } else {
+        continue;
+      }
+
+      if (!noDo || ["no do", "nodo"].includes(noDo.toLowerCase())) continue;
+      if (!/\d/.test(noDo)) continue;
+
+      const person = master.byKd.get(kdSls);
+      let depo;
+      let salesName;
+      let divisi;
+      if (person) {
+        depo = person.depo;
+        salesName = person.nama;
+        divisi = person.divisi;
+      } else {
+        depo =
+          ACCOUNT_DEPO[akun.toLowerCase()] ||
+          GUDANG_DEPO[gudang.toUpperCase()] ||
+          "LAINNYA";
+        salesName = kdSls ? `Sales ${kdSls}` : "Tanpa KD Sales";
+        divisi = "SALESMAN";
+      }
+
+      const reason = exclusionReason(tipe, status);
+      records.push({
+        no_do: noDo,
+        tipe,
+        tgl_do: parseDate(tglDoRaw),
+        tgl_kirim: parseDate(tglKirimRaw),
+        gudang,
+        customer: customer || "Tanpa nama",
+        alamat,
+        kd_sls: kdSls,
+        sales_name: salesName,
+        depo,
+        divisi,
+        status: status || "Tanpa status",
+        is_cancel: reason === "Cancel",
+        is_swap: reason === "Swap",
+        is_return: reason === "Return",
+        is_excluded: reason !== null,
+        exclusion_reason: reason,
+        total: parseMoney(totalRaw),
+        akun,
+        scraped_at: parseDatetime(waktuRaw),
+      });
+    }
+
+    const byDo = new Map();
+    for (const record of records) {
+      const previous = byDo.get(record.no_do);
+      if (!previous || (record.scraped_at || "") >= (previous.scraped_at || "")) {
+        byDo.set(record.no_do, record);
+      }
+    }
+    return Array.from(byDo.values());
+  }
+
+  // =========================================================================
+  // Parser MISI HARIAN
+  // =========================================================================
+  function parseTargets(rows) {
+    const targets = {};
+    const names = {};
+    let targetDate = null;
+
+    if (rows && rows.length) {
+      // CSV gviz menaruh tanggal di baris 1; JSONP menambahkan baris header
+      // sintetis di depan, jadi cari baris "TANGGAL" agar keduanya aman.
+      const dateRow = rows.find(
+        (row) => row && clean(row[0]).toUpperCase() === "TANGGAL"
+      );
+      if (dateRow && dateRow.length > 1) {
+        targetDate = parseDate(dateRow[1]);
+      } else if (rows.length > 1 && rows[1] && rows[1].length > 1) {
+        targetDate = parseDate(rows[1][1]);
+      }
+    }
+
+    for (const row of rows || []) {
+      if (!row || row.length < 8) continue;
+      const kdSls = clean(row[2]);
+      if (!kdSls) continue;
+      const target = parseMoney(row[7]);
+      if (target <= 0) continue;
+      targets[kdSls] = target;
+      names[kdSls] = clean(row[3]);
+    }
+
+    return {
+      targets,
+      target_names: names,
+      target_date: targetDate,
+      target_count: Object.keys(targets).length,
+    };
+  }
+
+  // =========================================================================
+  // Agregasi dashboard (port dari omset/analytics.py)
+  // =========================================================================
+  const sum = (records) => records.reduce((total, record) => total + (Number(record.total) || 0), 0);
+  const pct = (real, target) => (target ? Math.round((Number(real) / Number(target)) * 10000) / 100 : null);
+  const customerKey = (record) => clean(record.customer || record.no_do).toUpperCase();
+  const statusKey = (value) => clean(value).toLowerCase();
+
+  function isIncluded(record) {
+    const reason = record.exclusion_reason || exclusionReason(record.tipe, record.status);
+    return reason === null;
+  }
+
+  function doSortValue(record) {
+    const digits = String(record.no_do || "").replace(/\D/g, "");
+    return digits ? Number(digits) : 0;
+  }
+
+  function buildDashboard(records, targets, master, trend, meta) {
+    const included = records.filter(isIncluded);
+    const cancelled = records.filter((record) => (record.exclusion_reason || exclusionReason(record.tipe, record.status)) === "Cancel");
+    const swapRows = records.filter((record) => (record.exclusion_reason || exclusionReason(record.tipe, record.status)) === "Swap");
+    const returnRows = records.filter((record) => (record.exclusion_reason || exclusionReason(record.tipe, record.status)) === "Return");
+    const otherExcluded = records.filter((record) => {
+      const reason = record.exclusion_reason || exclusionReason(record.tipe, record.status);
+      return reason && !["Cancel", "Swap", "Return"].includes(reason);
+    });
+
+    const revenue = sum(included);
+    const billing = sum(included.filter((record) => statusKey(record.status) === "billing process"));
+    const cancelValue = sum(cancelled);
+    const swapValue = sum(swapRows);
+    const returnValue = sum(returnRows);
+    const otherExcludedValue = sum(otherExcluded);
+    const excludedValue = cancelValue + swapValue + returnValue + otherExcludedValue;
+    const excludedCount = cancelled.length + swapRows.length + returnRows.length + otherExcluded.length;
+
+    const byKd = new Map();
+    for (const record of records) {
+      const key = String(record.kd_sls || "");
+      if (!byKd.has(key)) byKd.set(key, []);
+      byKd.get(key).push(record);
+    }
+
+    const salesmen = master.salesmen.map((person) => {
+      const rows = byKd.get(person.kd_sls) || [];
+      const includedRows = rows.filter(isIncluded);
+      const cancelRows = rows.filter((record) => (record.exclusion_reason || exclusionReason(record.tipe, record.status)) === "Cancel");
+      const personSwapRows = rows.filter((record) => (record.exclusion_reason || exclusionReason(record.tipe, record.status)) === "Swap");
+      const personReturnRows = rows.filter((record) => (record.exclusion_reason || exclusionReason(record.tipe, record.status)) === "Return");
+      const excludedRows = rows.filter((record) => !isIncluded(record));
+      const real = sum(includedRows);
+      const target = Number(targets[person.kd_sls] || 0);
+      const ec = new Set(includedRows.map(customerKey)).size;
+
+      return {
+        kd_sls: person.kd_sls,
+        nama: person.nama,
+        depo: person.depo,
+        divisi: person.divisi,
+        level: person.level,
+        target,
+        real,
+        billing: sum(includedRows.filter((record) => statusKey(record.status) === "billing process")),
+        pct: pct(real, target),
+        do_count: includedRows.length,
+        ec,
+        ec_target: Number(person.ec_target || 0),
+        ec_pct: pct(ec, person.ec_target),
+        cancel_value: sum(cancelRows),
+        cancel_count: cancelRows.length,
+        swap_value: sum(personSwapRows),
+        swap_count: personSwapRows.length,
+        return_value: sum(personReturnRows),
+        return_count: personReturnRows.length,
+        excluded_value: sum(excludedRows),
+        excluded_count: excludedRows.length,
+        avg_order: includedRows.length ? Math.floor(real / includedRows.length) : 0,
+        color: (master.depoMeta[person.depo] || {}).color || "#94a3b8",
+      };
+    });
+
+    salesmen.sort((a, b) => {
+      const aNull = a.pct === null ? 1 : 0;
+      const bNull = b.pct === null ? 1 : 0;
+      if (aNull !== bNull) return aNull - bNull;
+      return (b.pct || 0) - (a.pct || 0);
+    });
+
+    const knownKds = new Set(master.salesmen.map((person) => person.kd_sls));
+    const unknownRows = records.filter((record) => !knownKds.has(String(record.kd_sls || "")));
+    const unknownActive = unknownRows.filter(isIncluded);
+
+    const depos = [];
+    for (const depoName of master.depoOrder) {
+      const team = salesmen.filter((person) => person.depo === depoName);
+      if (!team.length) continue;
+      const depoMeta = master.depoMeta[depoName] || {};
+      const real = team.reduce((total, person) => total + person.real, 0);
+      const target = team.reduce((total, person) => total + person.target, 0);
+      const ec = team.reduce((total, person) => total + person.ec, 0);
+      const ecTargetValue = team.reduce((total, person) => total + person.ec_target, 0);
+      const top = team.reduce((best, person) => (person.real > best.real ? person : best), team[0]);
+
+      depos.push({
+        nama: depoName,
+        short: depoMeta.short || depoName,
+        color: depoMeta.color || "#94a3b8",
+        target,
+        real,
+        billing: team.reduce((total, person) => total + person.billing, 0),
+        pct: pct(real, target),
+        do_count: team.reduce((total, person) => total + person.do_count, 0),
+        ec,
+        ec_target: ecTargetValue,
+        ec_pct: pct(ec, ecTargetValue),
+        sales_count: team.length,
+        cancel_value: team.reduce((total, person) => total + person.cancel_value, 0),
+        cancel_count: team.reduce((total, person) => total + person.cancel_count, 0),
+        swap_value: team.reduce((total, person) => total + person.swap_value, 0),
+        swap_count: team.reduce((total, person) => total + person.swap_count, 0),
+        return_value: team.reduce((total, person) => total + person.return_value, 0),
+        return_count: team.reduce((total, person) => total + person.return_count, 0),
+        excluded_value: team.reduce((total, person) => total + person.excluded_value, 0),
+        excluded_count: team.reduce((total, person) => total + person.excluded_count, 0),
+        top_sales: top.nama,
+        top_sales_value: top.real,
+      });
+    }
+
+    if (unknownActive.length) {
+      depos.push({
+        nama: "LAINNYA",
+        short: "LAINNYA",
+        color: "#64748b",
+        target: 0,
+        real: sum(unknownActive),
+        billing: sum(unknownActive.filter((record) => statusKey(record.status) === "billing process")),
+        pct: null,
+        do_count: unknownActive.length,
+        ec: new Set(unknownActive.map(customerKey)).size,
+        ec_target: 0,
+        ec_pct: null,
+        sales_count: 0,
+        cancel_value: sum(unknownRows.filter((record) => (record.exclusion_reason || exclusionReason(record.tipe, record.status)) === "Cancel")),
+        cancel_count: unknownRows.filter((record) => (record.exclusion_reason || exclusionReason(record.tipe, record.status)) === "Cancel").length,
+        swap_value: sum(unknownRows.filter((record) => (record.exclusion_reason || exclusionReason(record.tipe, record.status)) === "Swap")),
+        swap_count: unknownRows.filter((record) => (record.exclusion_reason || exclusionReason(record.tipe, record.status)) === "Swap").length,
+        return_value: sum(unknownRows.filter((record) => (record.exclusion_reason || exclusionReason(record.tipe, record.status)) === "Return")),
+        return_count: unknownRows.filter((record) => (record.exclusion_reason || exclusionReason(record.tipe, record.status)) === "Return").length,
+        excluded_value: sum(unknownRows.filter((record) => !isIncluded(record))),
+        excluded_count: unknownRows.filter((record) => !isIncluded(record)).length,
+        top_sales: "—",
+        top_sales_value: 0,
+      });
+    }
+
+    const supervisors = master.supervisors.map((person) => {
+      const team = salesmen.filter((item) => item.depo === person.depo);
+      const real = team.reduce((total, item) => total + item.real, 0);
+      const target = team.reduce((total, item) => total + item.target, 0);
+      const ec = team.reduce((total, item) => total + item.ec, 0);
+      const ecTargetValue = team.reduce((total, item) => total + item.ec_target, 0);
+      return {
+        kd_sls: person.kd_sls,
+        nama: person.nama,
+        depo: person.depo,
+        divisi: person.divisi,
+        target,
+        real,
+        pct: pct(real, target),
+        ec,
+        ec_target: ecTargetValue,
+        ec_pct: pct(ec, ecTargetValue),
+        team_count: team.length,
+        color: (master.depoMeta[person.depo] || {}).color || "#94a3b8",
+      };
+    });
+
+    let manager = null;
+    if (master.manager) {
+      const real = salesmen.reduce((total, person) => total + person.real, 0);
+      const target = salesmen.reduce((total, person) => total + person.target, 0);
+      const ec = salesmen.reduce((total, person) => total + person.ec, 0);
+      const ecTargetValue = salesmen.reduce((total, person) => total + person.ec_target, 0);
+      manager = {
+        kd_sls: master.manager.kd_sls,
+        nama: master.manager.nama,
+        depo: master.manager.depo || "MEDAN RAYA",
+        divisi: master.manager.divisi || "MANAGER",
+        target,
+        real,
+        pct: pct(real, target),
+        ec,
+        ec_target: ecTargetValue,
+        ec_pct: pct(ec, ecTargetValue),
+        team_count: salesmen.length,
+      };
+    }
+
+    const statusMap = new Map();
+    for (const record of records) {
+      const label = clean(record.status) || "Tanpa status";
+      const key = label.toLowerCase();
+      if (!statusMap.has(key)) {
+        statusMap.set(key, {
+          status: label,
+          count: 0,
+          value: 0,
+          included_value: 0,
+          excluded_value: 0,
+          excluded: false,
+          color: STATUS_COLORS[key] || DEFAULT_STATUS_COLOR,
+        });
+      }
+      const item = statusMap.get(key);
+      const total = Number(record.total) || 0;
+      item.count += 1;
+      item.value += total;
+      if (isIncluded(record)) item.included_value += total;
+      else item.excluded_value += total;
+    }
+
+    const statusBreakdown = Array.from(statusMap.values());
+    for (const item of statusBreakdown) {
+      item.excluded = item.included_value === 0 && item.excluded_value > 0;
+    }
+    statusBreakdown.sort((a, b) => {
+      if (a.excluded !== b.excluded) return a.excluded ? 1 : -1;
+      return b.value - a.value;
+    });
+
+    const customerMap = new Map();
+    for (const record of included) {
+      const key = customerKey(record);
+      if (!customerMap.has(key)) {
+        customerMap.set(key, {
+          customer: record.customer || "—",
+          value: 0,
+          count: 0,
+          depo: record.depo || "",
+          sales: record.sales_name || "",
+        });
+      }
+      const item = customerMap.get(key);
+      item.value += Number(record.total) || 0;
+      item.count += 1;
+    }
+
+    const topCustomers = Array.from(customerMap.values())
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 8);
+
+    const cancelOrders = [...cancelled]
+      .sort((a, b) => (Number(b.total) || 0) - (Number(a.total) || 0))
+      .map((record) => ({
+        no_do: record.no_do,
+        tgl_do: record.tgl_do,
+        customer: record.customer,
+        sales_name: record.sales_name,
+        kd_sls: record.kd_sls,
+        depo: record.depo,
+        status: record.status,
+        total: Number(record.total) || 0,
+      }));
+
+    const recentOrders = [...records]
+      .sort((a, b) => {
+        const scrapedA = a.scraped_at || "";
+        const scrapedB = b.scraped_at || "";
+        if (scrapedA !== scrapedB) return scrapedB.localeCompare(scrapedA);
+        return doSortValue(b) - doSortValue(a);
+      })
+      .slice(0, 15)
+      .map((record) => {
+        const reason = record.exclusion_reason || exclusionReason(record.tipe, record.status);
+        return {
+          no_do: record.no_do,
+          tgl_do: record.tgl_do,
+          tgl_do_label: fmtDateShortId(record.tgl_do),
+          scraped_at: record.scraped_at,
+          scraped_at_label: fmtTimeId(record.scraped_at),
+          customer: record.customer,
+          sales_name: record.sales_name,
+          kd_sls: record.kd_sls,
+          depo: record.depo,
+          status: record.status,
+          total: Number(record.total) || 0,
+          is_cancel: reason === "Cancel",
+          is_swap: reason === "Swap",
+          is_return: reason === "Return",
+          is_excluded: reason !== null,
+          exclusion_reason: reason,
+          tipe: record.tipe,
+        };
+      });
+
+    const totalTarget = salesmen.reduce((total, person) => total + person.target, 0);
+    const customers = new Set(included.map(customerKey)).size;
+    const grossValue = revenue + excludedValue;
+    const summary = {
+      revenue,
+      billing,
+      gross_value: grossValue,
+      target: totalTarget,
+      pct: pct(revenue, totalTarget),
+      do_count: included.length,
+      do_total: records.length,
+      cancel_count: cancelled.length,
+      cancel_value: cancelValue,
+      swap_count: swapRows.length,
+      swap_value: swapValue,
+      return_count: returnRows.length,
+      return_value: returnValue,
+      other_excluded_count: otherExcluded.length,
+      other_excluded_value: otherExcludedValue,
+      excluded_count: excludedCount,
+      excluded_value: excludedValue,
+      customers,
+      avg_order: included.length ? Math.floor(revenue / included.length) : 0,
+      sales_count: salesmen.filter((person) => person.do_count > 0).length,
+      ec: salesmen.reduce((total, person) => total + person.ec, 0),
+      ec_target: salesmen.reduce((total, person) => total + person.ec_target, 0),
+    };
+    summary.ec_pct = pct(summary.ec, summary.ec_target);
+    summary.cancel_pct_of_gross = grossValue ? Math.round((cancelValue / grossValue) * 10000) / 100 : 0;
+    summary.excluded_pct_of_gross = grossValue ? Math.round((excludedValue / grossValue) * 10000) / 100 : 0;
+
+    const generatedAt = nowIso();
+    const staleMinutes = minutesSince(meta.source_updated_at);
+    const dataIsToday = meta.data_date === generatedAt.slice(0, 10);
+    const stale = Boolean(
+      meta.source !== "demo" &&
+        ((staleMinutes !== null && staleMinutes > OMSET_CONFIG.staleAfterMinutes) || !dataIsToday)
+    );
+
+    if (!trend || !trend.length) {
+      trend = [
+        {
+          ts: generatedAt,
+          label: "Sekarang",
+          revenue,
+          billing,
+          target: totalTarget,
+          do_count: included.length,
+        },
+      ];
+    }
+
+    const trendDelta =
+      trend.length >= 2
+        ? Number(trend[trend.length - 1].revenue) - Number(trend[0].revenue)
+        : 0;
+
+    const metaOut = {
+      ...meta,
+      generated_at: generatedAt,
+      generated_at_label: fmtDatetimeId(generatedAt),
+      source_updated_at_label: fmtDatetimeId(meta.source_updated_at),
+      data_date_label: fmtDateId(meta.data_date),
+      stale,
+      stale_minutes: staleMinutes !== null ? Math.round(staleMinutes) : null,
+      data_is_today: dataIsToday,
+      refresh_seconds: OMSET_CONFIG.refreshSeconds,
+      stale_after_minutes: OMSET_CONFIG.staleAfterMinutes,
+      trend_bucket_minutes: OMSET_CONFIG.trendBucketMinutes,
+      rule: "Omset dihitung dari DO non-Cancel, tanpa Swap (ZWE1) dan Return (ZRP1).",
+      source: meta.source || "live",
+      partial: Boolean(meta.partial),
+      expected_accounts: Number(meta.expected_accounts || OMSET_CONFIG.expectedAccounts),
+      accounts: Array.isArray(meta.accounts) ? meta.accounts : [],
+    };
+
+    return {
+      meta: metaOut,
+      summary,
+      depos,
+      salesmen,
+      supervisors,
+      manager,
+      status_breakdown: statusBreakdown,
+      top_customers: topCustomers,
+      cancel_orders: cancelOrders,
+      recent_orders: recentOrders,
+      trend,
+      trend_delta: trendDelta,
+    };
+  }
+
+  // =========================================================================
+  // Cache lokal & trend
+  // =========================================================================
+  const PAYLOAD_KEY = "omset_ai_payload_v1";
+  const TREND_KEY = "omset_ai_trend_v1";
+
+  function readStorage(key) {
+    try {
+      return window.localStorage.getItem(key);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function writeStorage(key, value) {
+    try {
+      window.localStorage.setItem(key, value);
+    } catch (error) {
+      // localStorage bisa diblokir di iframe/sandbox. Bukan masalah fatal.
+    }
+  }
+
+  function loadCachedPayload() {
+    const raw = readStorage(PAYLOAD_KEY);
+    if (!raw) return null;
+    try {
+      const payload = JSON.parse(raw);
+      return payload && payload.summary ? payload : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function saveCachedPayload(payload) {
+    writeStorage(PAYLOAD_KEY, JSON.stringify(payload));
+  }
+
+  function loadTrend() {
+    const raw = readStorage(TREND_KEY);
+    if (!raw) return [];
+    try {
+      const points = JSON.parse(raw);
+      return Array.isArray(points) ? points : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveTrend(points) {
+    writeStorage(TREND_KEY, JSON.stringify(points));
+  }
+
+  function appendTrend(summary) {
+    const now = nowIso();
+    const cutoff = Date.now() - OMSET_CONFIG.trendHours * 3600 * 1000;
+    const bucketMs = OMSET_CONFIG.trendBucketMinutes * 60 * 1000;
+
+    const points = loadTrend().filter((point) => {
+      const time = new Date(`${point.ts}+07:00`).getTime();
+      return Number.isFinite(time) && time >= cutoff;
+    });
+
+    const last = points[points.length - 1];
+    const lastTime = last ? new Date(`${last.ts}+07:00`).getTime() : 0;
+    const point = {
+      ts: now,
+      label: now.slice(11, 16),
+      revenue: summary.revenue,
+      billing: summary.billing,
+      target: summary.target,
+      do_count: summary.do_count,
+    };
+
+    if (!last || Date.now() - lastTime >= bucketMs) {
+      points.push(point);
+    } else {
+      points[points.length - 1] = { ...last, ...point, ts: last.ts, label: last.label };
+    }
+
+    saveTrend(points);
+    return points;
+  }
+
+  function decorateCached(cached, options = {}) {
+    const payload = JSON.parse(JSON.stringify(cached));
+    const now = nowIso();
+    payload.meta = {
+      ...(payload.meta || {}),
+      source: options.source || "cache",
+      stale: options.stale !== undefined ? options.stale : true,
+      partial: options.partial !== undefined ? options.partial : false,
+      accounts: options.accounts || [],
+      expected_accounts: OMSET_CONFIG.expectedAccounts,
+      generated_at: now,
+      generated_at_label: fmtDatetimeId(now),
+    };
+    if (options.note) payload.meta.partial_note = options.note;
+    if (options.error) payload.meta.error = options.error;
+    return payload;
+  }
+
+  // =========================================================================
+  // Orkestrasi
+  // =========================================================================
+  function buildScrapeMeta(records, rows) {
+    let sourceUpdatedAt = null;
+    let dataDate = null;
+    for (const record of records) {
+      if (record.scraped_at && (!sourceUpdatedAt || record.scraped_at > sourceUpdatedAt)) {
+        sourceUpdatedAt = record.scraped_at;
+      }
+      if (record.tgl_do && (!dataDate || record.tgl_do > dataDate)) {
+        dataDate = record.tgl_do;
+      }
+    }
+    const accounts = Array.from(new Set(records.map((record) => record.akun).filter(Boolean))).sort();
+    return {
+      source_updated_at: sourceUpdatedAt,
+      data_date: dataDate,
+      accounts,
+      raw_rows: Math.max(0, (rows ? rows.length : 0) - 1),
+    };
+  }
+
+  function buildMeta(scrapeMeta, targetData, partial) {
+    return {
+      ...scrapeMeta,
+      target_date: targetData.target_date,
+      target_names: targetData.target_names,
+      target_count: targetData.target_count,
+      source: "live",
+      partial,
+      expected_accounts: OMSET_CONFIG.expectedAccounts,
+      accounts: scrapeMeta.accounts,
+      partial_note: partial
+        ? `Baru ${scrapeMeta.accounts.length} dari ${OMSET_CONFIG.expectedAccounts} akun yang masuk. Angka sementara dan akan bertambah otomatis.`
+        : undefined,
+    };
+  }
+
+  async function load(options = {}) {
+    const force = Boolean(options.force);
+    try {
+      const scrapingRows = await fetchSheetRows(OMSET_CONFIG.scrapingSheet, force);
+      const misiRows = await fetchSheetRows(OMSET_CONFIG.misiSheet, force);
+
+      const master = getMaster();
+      const records = parseScrapingRows(scrapingRows, master);
+      const targetData = parseTargets(misiRows);
+      const scrapeMeta = buildScrapeMeta(records, scrapingRows);
+      const partial = scrapeMeta.accounts.length < OMSET_CONFIG.expectedAccounts;
+      const cached = loadCachedPayload();
+
+      if (!records.length) {
+        if (cached) {
+          return decorateCached(cached, {
+            source: "live",
+            stale: false,
+            partial: true,
+            accounts: scrapeMeta.accounts,
+            note: "Sheet sedang ditulis ulang oleh bot. Menampilkan data lengkap terakhir.",
+          });
+        }
+        throw new Error("Sheet SCRAPING kosong. Bot mungkin sedang menulis data.");
+      }
+
+      if (partial && cached && cached.meta && cached.meta.data_date === scrapeMeta.data_date) {
+        return decorateCached(cached, {
+          source: "live",
+          stale: false,
+          partial: true,
+          accounts: scrapeMeta.accounts,
+          note: `Baru ${scrapeMeta.accounts.length} dari ${OMSET_CONFIG.expectedAccounts} akun yang masuk. Menampilkan data lengkap terakhir.`,
+        });
+      }
+
+      const meta = buildMeta(scrapeMeta, targetData, partial);
+      const payload = buildDashboard(records, targetData.targets, master, [], meta);
+
+      if (!partial) {
+        payload.trend = appendTrend(payload.summary);
+        payload.trend_delta =
+          payload.trend.length >= 2
+            ? Number(payload.trend[payload.trend.length - 1].revenue) - Number(payload.trend[0].revenue)
+            : 0;
+        saveCachedPayload(payload);
+      } else {
+        payload.trend = loadTrend();
+        if (!payload.trend.length) {
+          payload.trend = [
+            {
+              ts: payload.meta.generated_at,
+              label: "Sekarang",
+              revenue: payload.summary.revenue,
+              billing: payload.summary.billing,
+              target: payload.summary.target,
+              do_count: payload.summary.do_count,
+            },
+          ];
+        }
+        payload.trend_delta =
+          payload.trend.length >= 2
+            ? Number(payload.trend[payload.trend.length - 1].revenue) - Number(payload.trend[0].revenue)
+            : 0;
+      }
+
+      return payload;
+    } catch (error) {
+      const cached = loadCachedPayload();
+      if (cached) {
+        return decorateCached(cached, {
+          source: "cache",
+          stale: true,
+          error: error && error.message ? error.message : String(error),
+        });
+      }
+      throw error;
+    }
+  }
+
+  window.OmsetData = {
+    config: OMSET_CONFIG,
+    load,
+    buildDashboard,
+    parseScrapingRows,
+    parseTargets,
+    getMaster,
+    parseMoney,
+    parseDate,
+    parseDatetime,
+    exclusionReason,
+  };
+})();
+
+  </script>
+  <script>
+(() => {
+  "use strict";
+
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+  const state = {
+    data: null,
+    loading: false,
+    refreshSeconds: Number(document.body.dataset.refresh) || 30,
+    countdown: Number(document.body.dataset.refresh) || 30,
+    timer: null,
+    search: "",
+    depo: "",
+    sortKey: "pct",
+    sortDir: "desc",
+    lastFetch: 0,
+  };
+
+  const els = {
+    alert: $("#alert"),
+    errorState: $("#errorState"),
+    errorMessage: $("#errorMessage"),
+    retryBtn: $("#retryBtn"),
+    refreshBtn: $("#refreshBtn"),
+    sourceBadge: $("#sourceBadge"),
+    sourceText: $("#sourceText"),
+    dataDate: $("#dataDate"),
+    scraperTime: $("#scraperTime"),
+    countdown: $("#countdown"),
+    serverTime: $("#serverTime"),
+    footSource: $("#footSource"),
+    kpiRevenue: $("#kpiRevenue"),
+    kpiRevenueSub: $("#kpiRevenueSub"),
+    kpiRevenueFull: $("#kpiRevenueFull"),
+    kpiRevenueDelta: $("#kpiRevenueDelta"),
+    kpiSpark: $("#kpiSpark"),
+    kpiTarget: $("#kpiTarget"),
+    kpiTargetSub: $("#kpiTargetSub"),
+    kpiPct: $("#kpiPct"),
+    kpiPctSub: $("#kpiPctSub"),
+    kpiProgress: $("#kpiProgress"),
+    kpiDo: $("#kpiDo"),
+    kpiDoSub: $("#kpiDoSub"),
+    kpiExcluded: $("#kpiExcluded"),
+    kpiExcludedSub: $("#kpiExcludedSub"),
+    kpiCustomers: $("#kpiCustomers"),
+    kpiCustomersSub: $("#kpiCustomersSub"),
+    depoTag: $("#depoTag"),
+    depoList: $("#depoList"),
+    depoTotalTarget: $("#depoTotalTarget"),
+    depoTotalReal: $("#depoTotalReal"),
+    depoTotalGap: $("#depoTotalGap"),
+    donut: $("#donut"),
+    donutTotal: $("#donutTotal"),
+    statusLegend: $("#statusLegend"),
+    trendChart: $("#trendChart"),
+    trendDelta: $("#trendDelta"),
+    trendRange: $("#trendRange"),
+    trendStart: $("#trendStart"),
+    trendNow: $("#trendNow"),
+    salesSub: $("#salesSub"),
+    salesBody: $("#salesBody"),
+    salesCount: $("#salesCount"),
+    searchInput: $("#searchInput"),
+    depoFilter: $("#depoFilter"),
+    customerList: $("#customerList"),
+    cancelList: $("#cancelList"),
+    cancelCount: $("#cancelCount"),
+    openCancelBtn: $("#openCancelBtn"),
+    supervisorGrid: $("#supervisorGrid"),
+    recentBody: $("#recentBody"),
+    recentTag: $("#recentTag"),
+    cancelModal: $("#cancelModal"),
+    cancelModalBody: $("#cancelModalBody"),
+    modalCancelCount: $("#modalCancelCount"),
+    modalCancelValue: $("#modalCancelValue"),
+  };
+
+  const rpFormatter = new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  });
+  const numberFormatter = new Intl.NumberFormat("id-ID");
+
+  const escapeHtml = (value) =>
+    String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    }[char]));
+
+  const fmtRp = (value) => rpFormatter.format(Number(value) || 0).replace(/\u00a0/g, " ");
+  const fmtNum = (value) => numberFormatter.format(Number(value) || 0);
+
+  function fmtCompact(value) {
+    const number = Number(value) || 0;
+    const absolute = Math.abs(number);
+    if (absolute >= 1e12) return `Rp ${(number / 1e12).toFixed(2).replace(".", ",")} T`;
+    if (absolute >= 1e9) return `Rp ${(number / 1e9).toFixed(2).replace(".", ",")} M`;
+    if (absolute >= 1e6) return `Rp ${(number / 1e6).toFixed(1).replace(".", ",")} jt`;
+    if (absolute >= 1e3) return `Rp ${Math.round(number / 1e3)} rb`;
+    return `Rp ${number}`;
+  }
+
+  function fmtPct(value) {
+    if (value === null || value === undefined) return "—";
+    return `${Number(value).toLocaleString("id-ID", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}%`;
+  }
+
+  function pctClass(value) {
+    if (value === null || value === undefined) return "neutral";
+    if (value >= 100) return "good";
+    if (value >= 70) return "warn";
+    return "bad";
+  }
+
+  function clampPct(value) {
+    if (value === null || value === undefined) return 0;
+    return Math.max(0, Math.min(100, Number(value)));
+  }
+
+  function initials(name) {
+    const cleaned = String(name || "")
+      .replace(/^(GDKDA|AEPDA|ASSDA)\s*[- ]\s*/i, "")
+      .trim();
+    const parts = cleaned.split(/\s+/).filter(Boolean);
+    if (!parts.length) return "?";
+    return `${parts[0][0] || ""}${parts[1] ? parts[1][0] : ""}`.toUpperCase();
+  }
+
+  function splitCustomer(value) {
+    const name = String(value || "—");
+    const index = name.indexOf("-");
+    if (index > 0 && index <= 14) {
+      return { code: name.slice(0, index), name: name.slice(index + 1) };
+    }
+    return { code: "", name };
+  }
+
+  function shortDepo(name) {
+    const found = state.data?.depos?.find((item) => item.nama === name);
+    return found?.short || String(name || "").replace(/^PMA /, "");
+  }
+
+  function fmtDateShort(isoDate) {
+    if (!isoDate) return "—";
+    const date = new Date(`${isoDate}T00:00:00`);
+    if (Number.isNaN(date.getTime())) return isoDate;
+    return date.toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
+  }
+
+  function statusClass(status) {
+    const key = String(status || "").toLowerCase();
+    if (key.includes("cancel")) return "cancel";
+    if (key.includes("billing")) return "billing";
+    if (key.includes("new")) return "new";
+    if (key.includes("swap")) return "swap";
+    return "other";
+  }
+
+  function statusBadge(status) {
+    return `<span class="badge-status ${statusClass(status)}">${escapeHtml(status || "—")}</span>`;
+  }
+
+  function showAlert(type, html) {
+    const icons = {
+      info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8v.01"/></svg>',
+      warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l9 16H3z"/><path d="M12 9v4"/><path d="M12 16v.01"/></svg>',
+      error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/></svg>',
+    };
+    els.alert.className = `alert alert-${type}`;
+    els.alert.innerHTML = `${icons[type] || icons.info}<div>${html}</div>`;
+  }
+
+  function hideAlert() {
+    els.alert.className = "alert hidden";
+    els.alert.innerHTML = "";
+  }
+
+  function setSourceBadge(type, label) {
+    els.sourceBadge.className = `badge badge-${type}`;
+    els.sourceText.textContent = label;
+  }
+
+  function setAlertFromMeta(meta) {
+    if (meta.error) {
+      showAlert(
+        "warn",
+        `<strong>Gagal sinkron ke Google Sheets.</strong> Menampilkan data terakhir yang tersimpan. <span class="muted">${escapeHtml(meta.error)}</span>`
+      );
+      return;
+    }
+    if (meta.source === "demo") {
+      showAlert("info", "<strong>Mode demo aktif.</strong> Data di bawah adalah contoh. Set <code>OMSET_DEMO=0</code> untuk membaca Google Sheets.");
+      return;
+    }
+    if (meta.stale) {
+      let message = `<strong>Data scraper belum diperbarui.</strong> Terakhir: ${escapeHtml(meta.source_updated_at_label || "—")}`;
+      if (meta.stale_minutes !== null && meta.stale_minutes !== undefined) {
+        message += ` (${fmtNum(meta.stale_minutes)} menit lalu)`;
+      }
+      if (meta.data_is_today === false) {
+        message += `. Data yang tampil adalah tanggal ${escapeHtml(meta.data_date_label || "—")}`;
+      }
+      message += ". Bot mungkin sedang jeda atau hari Minggu.";
+      showAlert("warn", message);
+      return;
+    }
+    if (meta.partial) {
+      if (meta.partial_note) {
+        showAlert("info", `<strong>Sinkronisasi sedang berjalan.</strong> ${escapeHtml(meta.partial_note)}`);
+        return;
+      }
+      const accounts = Array.isArray(meta.accounts) ? meta.accounts.length : 0;
+      const expected = meta.expected_accounts || 3;
+      showAlert(
+        "info",
+        `<strong>Sinkronisasi bot sedang berjalan.</strong> Baru ${fmtNum(accounts)} dari ${fmtNum(expected)} akun yang masuk. Angka di dashboard masih sementara dan akan bertambah otomatis.`
+      );
+      return;
+    }
+    hideAlert();
+  }
+
+  function sparklineSvg(values) {
+    if (!values || values.length < 2) return "";
+    const width = 300;
+    const height = 40;
+    const minimum = Math.min(...values);
+    const maximum = Math.max(...values);
+    const span = maximum - minimum || 1;
+    const flat = maximum === minimum;
+    const step = width / (values.length - 1);
+    const points = values.map((value, index) => [
+      index * step,
+      flat ? height / 2 : height - 4 - ((value - minimum) / span) * (height - 10),
+    ]);
+    const path = points
+      .map((point, index) => `${index === 0 ? "M" : "L"}${point[0].toFixed(1)} ${point[1].toFixed(1)}`)
+      .join(" ");
+    const area = `${path} L${width} ${height} L0 ${height} Z`;
+    return `<svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#22d3a7" stop-opacity="0.32"></stop>
+          <stop offset="100%" stop-color="#22d3a7" stop-opacity="0"></stop>
+        </linearGradient>
+      </defs>
+      <path d="${area}" fill="url(#sparkFill)"></path>
+      <path d="${path}" fill="none" stroke="#22d3a7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>`;
+  }
+
+  function trendSvg(trend) {
+    const values = trend.map((point) => Number(point.revenue) || 0);
+    const width = 320;
+    const height = 96;
+    const padding = 6;
+    const minimum = Math.min(...values);
+    const maximum = Math.max(...values);
+    const span = maximum - minimum || 1;
+    const flat = maximum === minimum;
+    const step = values.length > 1 ? (width - padding * 2) / (values.length - 1) : 0;
+    const points = values.map((value, index) => [
+      padding + index * step,
+      flat
+        ? height / 2
+        : height - padding - ((value - minimum) / span) * (height - padding * 2),
+    ]);
+    const line = points
+      .map((point, index) => `${index === 0 ? "M" : "L"}${point[0].toFixed(1)} ${point[1].toFixed(1)}`)
+      .join(" ");
+    const area = `${line} L${width - padding} ${height} L${padding} ${height} Z`;
+    const last = points[points.length - 1];
+    const grid = [0.25, 0.5, 0.75]
+      .map((ratio) => {
+        const y = padding + (height - padding * 2) * ratio;
+        return `<line x1="${padding}" y1="${y}" x2="${width - padding}" y2="${y}" stroke="rgba(148,163,184,.10)" stroke-width="1" stroke-dasharray="3 5"></line>`;
+      })
+      .join("");
+    return `<svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="Grafik tren omset">
+      <defs>
+        <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#22d3a7" stop-opacity="0.28"></stop>
+          <stop offset="100%" stop-color="#22d3a7" stop-opacity="0"></stop>
+        </linearGradient>
+      </defs>
+      ${grid}
+      <path d="${area}" fill="url(#trendFill)"></path>
+      <path d="${line}" fill="none" stroke="#22d3a7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+      <circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="3.4" fill="#22d3a7" stroke="#0b1322" stroke-width="2"></circle>
+    </svg>`;
+  }
+
+  function renderMeta(meta) {
+    els.dataDate.textContent = meta.data_date_label || "—";
+    els.scraperTime.textContent = meta.source_updated_at_label || "—";
+    els.serverTime.textContent = meta.generated_at_label || "—";
+
+    const source = meta.source || "live";
+    if (source === "demo") {
+      setSourceBadge("demo", "DEMO");
+      els.footSource.textContent = "Sumber: data demo (OMSET_DEMO=1)";
+    } else if (meta.error || source === "cache") {
+      setSourceBadge("cache", "CACHE");
+      els.footSource.textContent = "Sumber: cache lokal · Google Sheets belum tersambung";
+    } else if (meta.stale) {
+      setSourceBadge("cache", "DATA LAMA");
+      els.footSource.textContent = "Sumber: Google Sheets · SCRAPING / MISI HARIAN";
+    } else if (meta.partial) {
+      setSourceBadge("cache", "SINKRON");
+      els.footSource.textContent = "Sumber: Google Sheets · sinkronisasi akun berjalan";
+    } else {
+      setSourceBadge("live", "LIVE");
+      els.footSource.textContent = "Sumber: Google Sheets · SCRAPING / MISI HARIAN";
+    }
+  }
+
+  function renderSummary(data) {
+    const summary = data.summary;
+    const trendValues = (data.trend || []).map((point) => Number(point.revenue) || 0);
+
+    els.kpiRevenue.textContent = fmtCompact(summary.revenue);
+    els.kpiRevenue.title = fmtRp(summary.revenue);
+    els.kpiRevenueSub.textContent = `${fmtNum(summary.do_count)} DO dihitung · ${fmtNum(summary.customers)} customer`;
+    els.kpiRevenueFull.textContent = fmtRp(summary.revenue);
+    els.kpiSpark.innerHTML = sparklineSvg(trendValues);
+
+    const delta = Number(data.trend_delta) || 0;
+    if (delta > 0) {
+      els.kpiRevenueDelta.textContent = `+${fmtCompact(delta)}`;
+      els.kpiRevenueDelta.title = `Naik ${fmtRp(delta)} dari snapshot awal`;
+    } else if (delta < 0) {
+      els.kpiRevenueDelta.textContent = `-${fmtCompact(Math.abs(delta))}`;
+      els.kpiRevenueDelta.title = `Turun ${fmtRp(Math.abs(delta))} dari snapshot awal`;
+    } else {
+      els.kpiRevenueDelta.textContent = "";
+    }
+
+    els.kpiTarget.textContent = fmtCompact(summary.target);
+    els.kpiTarget.title = fmtRp(summary.target);
+    els.kpiTargetSub.textContent = summary.target
+      ? `Target harian ${fmtNum(summary.sales_count)} sales aktif`
+      : "Target belum tersedia di MISI HARIAN";
+
+    els.kpiPct.textContent = fmtPct(summary.pct);
+    els.kpiPctSub.textContent = summary.target
+      ? `Sisa ${fmtCompact(Math.max(0, summary.target - summary.revenue))} untuk capai target`
+      : "Realisasi terhadap target";
+    els.kpiProgress.style.width = `${clampPct(summary.pct)}%`;
+    els.kpiProgress.className = `kpi-progress-fill ${pctClass(summary.pct)}`;
+
+    els.kpiDo.textContent = fmtNum(summary.do_count);
+    const swapReturnCount = (Number(summary.swap_count) || 0) + (Number(summary.return_count) || 0);
+    els.kpiDoSub.textContent = `${fmtNum(summary.do_total)} total DO · ${fmtNum(summary.cancel_count)} cancel · ${fmtNum(swapReturnCount)} swap/return`;
+
+    els.kpiExcluded.textContent = fmtCompact(summary.excluded_value);
+    els.kpiExcluded.title = fmtRp(summary.excluded_value);
+    els.kpiExcludedSub.textContent = `${fmtNum(summary.cancel_count)} cancel · ${fmtNum(summary.swap_count)} swap · ${fmtNum(summary.return_count)} return · ${fmtPct(summary.excluded_pct_of_gross)} dari bruto`;
+
+    els.kpiCustomers.textContent = fmtNum(summary.customers);
+    els.kpiCustomersSub.textContent = `${fmtNum(summary.sales_count)} salesman aktif · EC ${fmtNum(summary.ec)}/${fmtNum(summary.ec_target)}`;
+
+    els.depoTotalTarget.textContent = fmtCompact(summary.target);
+    els.depoTotalReal.textContent = fmtCompact(summary.revenue);
+    els.depoTotalGap.textContent = fmtCompact(Math.max(0, summary.target - summary.revenue));
+    els.depoTotalTarget.title = fmtRp(summary.target);
+    els.depoTotalReal.title = fmtRp(summary.revenue);
+    els.depoTotalGap.title = fmtRp(Math.max(0, summary.target - summary.revenue));
+  }
+
+  function renderDepos(depos) {
+    els.depoTag.textContent = `${depos.length} depo`;
+    if (!depos.length) {
+      els.depoList.innerHTML = '<div class="empty-inline">Belum ada data depo.</div>';
+      return;
+    }
+    els.depoList.innerHTML = depos
+      .map((depo) => {
+        const pct = depo.pct;
+        const width = clampPct(pct);
+        const fill = pct === null || pct === undefined
+          ? "linear-gradient(90deg, #475569, #64748b)"
+          : pct >= 100
+            ? "linear-gradient(90deg, #0d9488, #22d3a7)"
+            : pct >= 70
+              ? "linear-gradient(90deg, #b45309, #fbbf24)"
+              : "linear-gradient(90deg, #be123c, #fb7185)";
+        return `<div class="depo-row">
+          <div class="depo-id">
+            <span class="depo-dot" style="background:${escapeHtml(depo.color)}"></span>
+            <div>
+              <div class="depo-name" title="${escapeHtml(depo.nama)}">${escapeHtml(depo.short)}</div>
+              <div class="depo-meta">${fmtNum(depo.sales_count)} sales · ${fmtNum(depo.do_count)} DO</div>
+            </div>
+          </div>
+          <div class="depo-bar-wrap" title="${escapeHtml(depo.nama)}: ${fmtRp(depo.real)} dari ${fmtRp(depo.target)}">
+            <div class="depo-track"><div class="depo-fill" style="width:${width}%;background:${fill}"></div></div>
+            <div class="depo-values"><span>${fmtCompact(depo.real)}</span><span>/ ${depo.target ? fmtCompact(depo.target) : "tanpa target"}</span></div>
+          </div>
+          <div class="depo-pct ${pctClass(pct)}">${fmtPct(pct)}</div>
+        </div>`;
+      })
+      .join("");
+  }
+
+  function renderStatus(statuses, summary) {
+    const total = statuses.reduce((accumulator, item) => accumulator + item.count, 0);
+    els.donutTotal.textContent = fmtNum(total);
+
+    if (!total) {
+      els.donut.style.background = "conic-gradient(rgba(148,163,184,.14) 0 100%)";
+      els.statusLegend.innerHTML = '<div class="empty-inline">Belum ada DO.</div>';
+      return;
+    }
+
+    let cursor = 0;
+    const stops = [];
+    for (const item of statuses) {
+      const start = (cursor / total) * 100;
+      cursor += item.count;
+      const end = (cursor / total) * 100;
+      stops.push(`${item.color} ${start.toFixed(2)}% ${end.toFixed(2)}%`);
+    }
+    els.donut.style.background = `conic-gradient(${stops.join(", ")})`;
+
+    els.statusLegend.innerHTML = statuses
+      .map(
+        (item) => `<div class="legend-row">
+          <span class="legend-dot" style="background:${escapeHtml(item.color)}"></span>
+          <div class="legend-label">
+            <span title="${escapeHtml(item.status)}">${escapeHtml(item.status)}</span>
+            ${item.excluded ? '<span class="legend-excluded">tidak dihitung</span>' : ""}
+          </div>
+          <span class="legend-value"><strong>${fmtNum(item.count)}</strong> DO · ${fmtCompact(item.value)}</span>
+        </div>`
+      )
+      .join("");
+  }
+
+  function renderTrend(trend, delta, bucketMinutes) {
+    els.trendRange.textContent = `${trend.length} titik snapshot · ${bucketMinutes || 5} menit`;
+    const deltaValue = Number(delta) || 0;
+    if (trend.length >= 2 && deltaValue !== 0) {
+      els.trendDelta.textContent = `${deltaValue > 0 ? "+" : "-"}${fmtCompact(Math.abs(deltaValue))}`;
+      els.trendDelta.className = `trend-delta${deltaValue < 0 ? " negative" : ""}`;
+    } else {
+      els.trendDelta.textContent = "—";
+      els.trendDelta.className = "trend-delta";
+    }
+
+    const first = trend[0];
+    const last = trend[trend.length - 1];
+    els.trendStart.textContent = first ? `${first.label} · ${fmtCompact(first.revenue)}` : "—";
+    els.trendNow.textContent = last ? `${last.label} · ${fmtCompact(last.revenue)}` : "—";
+
+    if (trend.length < 2) {
+      els.trendChart.innerHTML = `<div class="trend-placeholder">
+        <svg viewBox="0 0 320 80" preserveAspectRatio="none" aria-hidden="true">
+          <line x1="6" y1="62" x2="314" y2="62" stroke="rgba(148,163,184,.2)" stroke-width="1.2" stroke-dasharray="4 6"></line>
+          <line x1="6" y1="38" x2="314" y2="38" stroke="rgba(148,163,184,.09)" stroke-width="1" stroke-dasharray="4 6"></line>
+          <circle cx="314" cy="62" r="3.4" fill="#22d3a7"></circle>
+        </svg>
+        <p>Menunggu snapshot berikutnya…<br><span>Grafik terisi otomatis setiap ${bucketMinutes || 5} menit.</span></p>
+      </div>`;
+      return;
+    }
+    els.trendChart.innerHTML = trendSvg(trend);
+  }
+
+  function populateDepoFilter(depos) {
+    const current = state.depo;
+    els.depoFilter.innerHTML = '<option value="">Semua depo</option>' + depos
+      .map((depo) => `<option value="${escapeHtml(depo.nama)}">${escapeHtml(depo.short)}</option>`)
+      .join("");
+    els.depoFilter.value = current;
+    state.depo = els.depoFilter.value;
+  }
+
+  function renderSales(salesmen) {
+    state.sales = salesmen;
+    populateDepoFilter(state.data?.depos || []);
+    const active = salesmen.filter((person) => person.do_count > 0).length;
+    els.salesSub.textContent = `${salesmen.length} salesman · ${active} sudah ada DO`;
+    renderSalesRows();
+  }
+
+  function renderSalesRows() {
+    const rows = state.sales || [];
+    const query = state.search.trim().toLowerCase();
+    const depo = state.depo;
+
+    let filtered = rows.filter((person) => {
+      const matchesDepo = !depo || person.depo === depo;
+      const haystack = `${person.nama} ${person.kd_sls} ${person.depo}`.toLowerCase();
+      return matchesDepo && (!query || haystack.includes(query));
+    });
+
+    const direction = state.sortDir === "asc" ? 1 : -1;
+    filtered = filtered.slice().sort((first, second) => {
+      const key = state.sortKey;
+      const a = first[key];
+      const b = second[key];
+      if (key === "nama") return String(a).localeCompare(String(b), "id") * direction;
+      if (a === null || a === undefined) return 1;
+      if (b === null || b === undefined) return -1;
+      return (Number(a) - Number(b)) * direction;
+    });
+
+    $$("#salesTable thead button[data-sort]").forEach((button) => {
+      const active = button.dataset.sort === state.sortKey;
+      button.classList.toggle("active", active);
+      button.classList.toggle("asc", active && state.sortDir === "asc");
+    });
+
+    if (!filtered.length) {
+      els.salesBody.innerHTML = '<tr><td colspan="6"><div class="table-loading">Tidak ada salesman yang cocok dengan filter.</div></td></tr>';
+      els.salesCount.textContent = `0 dari ${rows.length} salesman`;
+      return;
+    }
+
+    els.salesBody.innerHTML = filtered
+      .map((person) => {
+        const cls = pctClass(person.pct);
+        const width = clampPct(person.pct);
+        const excludedParts = [];
+        if (Number(person.cancel_count)) excludedParts.push(`${fmtNum(person.cancel_count)} cancel`);
+        if (Number(person.swap_count)) excludedParts.push(`${fmtNum(person.swap_count)} swap`);
+        if (Number(person.return_count)) excludedParts.push(`${fmtNum(person.return_count)} return`);
+        const excludedChip = Number(person.excluded_count)
+          ? `<span class="${Number(person.cancel_count) ? "cancel-chip" : "swap-chip"}" title="${excludedParts.join(" · ")} dikecualikan">-${fmtCompact(person.excluded_value)}</span>`
+          : "";
+        return `<tr>
+          <td>
+            <div class="person">
+              <span class="avatar" style="--person-color:${escapeHtml(person.color)}">${escapeHtml(initials(person.nama))}</span>
+              <div>
+                <div class="person-name" title="${escapeHtml(person.nama)}">${escapeHtml(person.nama)}</div>
+                <div class="person-sub">${escapeHtml(person.kd_sls)} · ${escapeHtml(shortDepo(person.depo))}${excludedChip}</div>
+              </div>
+            </div>
+          </td>
+          <td class="num">${fmtCompact(person.target)}</td>
+          <td class="num cell-strong">${fmtCompact(person.real)}</td>
+          <td>
+            <div class="pct-cell">
+              <div class="mini-track"><div class="mini-fill ${cls}" style="width:${width}%"></div></div>
+              <span class="pct-text ${cls}">${fmtPct(person.pct)}</span>
+            </div>
+          </td>
+          <td class="num">${fmtNum(person.do_count)}</td>
+          <td class="num"><span class="ec-value">${fmtNum(person.ec)}<span class="muted">/${fmtNum(person.ec_target)}</span></span></td>
+        </tr>`;
+      })
+      .join("");
+
+    els.salesCount.textContent = `Menampilkan ${filtered.length} dari ${rows.length} salesman`;
+  }
+
+  function renderSupervisors(supervisors, manager) {
+    const cards = [];
+
+    if (manager) {
+      const cls = pctClass(manager.pct);
+      cards.push(`<div class="manager-card">
+        <div class="manager-id">
+          <div class="manager-avatar">${escapeHtml(initials(manager.nama))}</div>
+          <div>
+            <div class="manager-name">${escapeHtml(manager.nama)}</div>
+            <div class="manager-role">${escapeHtml(manager.divisi)} · ${escapeHtml(manager.depo)}</div>
+          </div>
+        </div>
+        <div class="manager-stat"><span>Omset</span><strong>${fmtCompact(manager.real)}</strong></div>
+        <div class="manager-stat"><span>Target</span><strong>${fmtCompact(manager.target)}</strong></div>
+        <div class="manager-stat"><span>Capaian</span><strong class="${cls}">${fmtPct(manager.pct)}</strong></div>
+        <div class="manager-stat"><span>EC</span><strong>${fmtNum(manager.ec)}/${fmtNum(manager.ec_target)}</strong></div>
+        <div class="manager-bar">
+          <div class="manager-track"><div class="manager-fill" style="width:${clampPct(manager.pct)}%"></div></div>
+          <small>${fmtRp(manager.real)} dari ${fmtRp(manager.target)}</small>
+        </div>
+      </div>`);
+    }
+
+    cards.push(
+      ...supervisors.map((person) => {
+        const cls = pctClass(person.pct);
+        return `<div class="sup-card" style="--sup-color:${escapeHtml(person.color)}">
+          <div class="sup-top">
+            <div>
+              <div class="sup-name" title="${escapeHtml(person.nama)}">${escapeHtml(person.nama)}</div>
+              <div class="sup-depo">${escapeHtml(shortDepo(person.depo))} · ${fmtNum(person.team_count)} sales</div>
+            </div>
+            <div class="sup-pct ${cls}">${fmtPct(person.pct)}</div>
+          </div>
+          <div class="sup-track"><div class="sup-fill ${cls}" style="width:${clampPct(person.pct)}%"></div></div>
+          <div class="sup-foot">
+            <span><strong>${fmtCompact(person.real)}</strong> / ${fmtCompact(person.target)}</span>
+            <span>EC ${fmtNum(person.ec)}/${fmtNum(person.ec_target)}</span>
+          </div>
+        </div>`;
+      })
+    );
+
+    els.supervisorGrid.innerHTML = cards.join("");
+  }
+
+  function renderCustomers(customers) {
+    if (!customers.length) {
+      els.customerList.innerHTML = '<li class="empty-inline">Belum ada data customer.</li>';
+      return;
+    }
+    els.customerList.innerHTML = customers
+      .map((customer, index) => {
+        const split = splitCustomer(customer.customer);
+        return `<li class="customer-item">
+          <span class="rank ${index < 3 ? "top" : ""}">${index + 1}</span>
+          <div class="customer-main">
+            <div class="customer-name" title="${escapeHtml(customer.customer)}">${escapeHtml(split.name)}</div>
+            <div class="customer-sub">${split.code ? `${escapeHtml(split.code)} · ` : ""}${fmtNum(customer.count)} DO · ${escapeHtml(shortDepo(customer.depo))}</div>
+          </div>
+          <div class="customer-value">${fmtCompact(customer.value)}</div>
+        </li>`;
+      })
+      .join("");
+  }
+
+  function renderCancel(orders, summary) {
+    const count = Number(summary.cancel_count) || orders.length;
+    els.cancelCount.textContent = fmtNum(count);
+    els.openCancelBtn.classList.toggle("hidden", !orders.length);
+
+    if (!orders.length) {
+      els.cancelList.innerHTML = '<div class="empty-inline">Tidak ada DO cancel. Semua DO masuk perhitungan.</div>';
+    } else {
+      els.cancelList.innerHTML = orders
+        .slice(0, 5)
+        .map((order) => {
+          const split = splitCustomer(order.customer);
+          return `<div class="cancel-item">
+            <div class="cancel-main">
+              <div class="cancel-customer" title="${escapeHtml(order.customer)}">${escapeHtml(split.name)}</div>
+              <div class="cancel-meta">${escapeHtml(order.sales_name)} · ${escapeHtml(shortDepo(order.depo))}</div>
+            </div>
+            <div class="cancel-value">${fmtCompact(order.total)}</div>
+          </div>`;
+        })
+        .join("");
+    }
+
+    els.modalCancelCount.textContent = fmtNum(orders.length);
+    els.modalCancelValue.textContent = fmtRp(summary.cancel_value);
+    els.cancelModalBody.innerHTML = orders.length
+      ? orders
+          .map((order) => {
+            const split = splitCustomer(order.customer);
+            return `<tr>
+              <td class="cell-mono">${escapeHtml(order.no_do)}</td>
+              <td><div class="cell-strong">${escapeHtml(split.name)}</div><div class="person-sub">${escapeHtml(split.code)}</div></td>
+              <td>${escapeHtml(order.sales_name)}<div class="person-sub">${escapeHtml(order.kd_sls)}</div></td>
+              <td>${escapeHtml(shortDepo(order.depo))}</td>
+              <td class="num cell-strong">${fmtRp(order.total)}</td>
+            </tr>`;
+          })
+          .join("")
+      : '<tr><td colspan="5"><div class="table-loading">Tidak ada DO cancel.</div></td></tr>';
+  }
+
+  function renderRecent(orders) {
+    els.recentTag.textContent = `${orders.length} DO`;
+    if (!orders.length) {
+      els.recentBody.innerHTML = '<tr><td colspan="6"><div class="table-loading">Belum ada transaksi.</div></td></tr>';
+      return;
+    }
+    els.recentBody.innerHTML = orders
+      .map((order) => {
+        const split = splitCustomer(order.customer);
+        return `<tr class="${order.is_excluded ? "row-excluded" : ""}">
+          <td class="cell-mono">${escapeHtml(order.no_do)}</td>
+          <td>${escapeHtml(order.tgl_do_label || fmtDateShort(order.tgl_do))}</td>
+          <td>
+            <div class="cell-strong" title="${escapeHtml(order.customer)}">${escapeHtml(split.name)}</div>
+            <div class="person-sub">${escapeHtml(split.code)}</div>
+          </td>
+          <td>
+            <div class="person">
+              <span class="avatar" style="--person-color:#38bdf8">${escapeHtml(initials(order.sales_name))}</span>
+              <div>
+                <div class="person-name" title="${escapeHtml(order.sales_name)}">${escapeHtml(order.sales_name)}</div>
+                <div class="person-sub">${escapeHtml(shortDepo(order.depo))}</div>
+              </div>
+            </div>
+          </td>
+          <td>${statusBadge(order.status)}${order.is_excluded ? ' <span class="legend-excluded">tidak dihitung</span>' : ""}</td>
+          <td class="num cell-strong">${fmtRp(order.total)}</td>
+        </tr>`;
+      })
+      .join("");
+  }
+
+  function render(data) {
+    renderMeta(data.meta);
+    renderSummary(data);
+    renderDepos(data.depos || []);
+    renderStatus(data.status_breakdown || [], data.summary);
+    renderTrend(
+      data.trend || [],
+      data.trend_delta,
+      data.meta?.trend_bucket_minutes
+    );
+    renderSales(data.salesmen || []);
+    renderSupervisors(data.supervisors || [], data.manager);
+    renderCustomers(data.top_customers || []);
+    renderCancel(data.cancel_orders || [], data.summary);
+    renderRecent(data.recent_orders || []);
+    setAlertFromMeta(data.meta);
+  }
+
+  function updateCountdown() {
+    els.countdown.textContent = `${Math.max(0, Math.round(state.countdown))}s`;
+  }
+
+  function handleFetchError(error) {
+    const message =
+      error?.name === "AbortError"
+        ? "Permintaan melebihi 25 detik."
+        : error?.message || "Terjadi kesalahan yang tidak diketahui.";
+
+    if (state.data) {
+      showAlert(
+        "error",
+        `<strong>Gagal memperbarui data.</strong> ${escapeHtml(message)} Data terakhir tetap ditampilkan.`
+      );
+    } else {
+      els.errorMessage.textContent = message;
+      els.errorState.classList.remove("hidden");
+      setSourceBadge("error", "ERROR");
+    }
+  }
+
+  async function fetchDashboard(force = false) {
+    if (state.loading) return;
+    state.loading = true;
+    els.refreshBtn.classList.add("spinning");
+    els.refreshBtn.disabled = true;
+
+    try {
+      if (!window.OmsetData || typeof window.OmsetData.load !== "function") {
+        throw new Error("Modul data belum dimuat.");
+      }
+      const payload = await window.OmsetData.load({ force });
+      if (!payload || !payload.summary) {
+        throw new Error((payload && payload.error) || "Data dashboard tidak tersedia.");
+      }
+
+      state.data = payload;
+      state.refreshSeconds = Number(payload.meta && payload.meta.refresh_seconds) || state.refreshSeconds;
+      state.countdown = state.refreshSeconds;
+      state.lastFetch = Date.now();
+
+      render(payload);
+      els.errorState.classList.add("hidden");
+    } catch (error) {
+      handleFetchError(error);
+    } finally {
+      state.loading = false;
+      els.refreshBtn.classList.remove("spinning");
+      els.refreshBtn.disabled = false;
+      updateCountdown();
+    }
+  }
+
+  function openCancelModal() {
+    if (!state.data?.cancel_orders?.length) return;
+    els.cancelModal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+    const closeButton = els.cancelModal.querySelector(".modal-head [data-close-modal]");
+    closeButton?.focus();
+  }
+
+  function closeCancelModal() {
+    els.cancelModal.classList.add("hidden");
+    document.body.style.overflow = "";
+  }
+
+  function bindEvents() {
+    els.refreshBtn.addEventListener("click", () => {
+      state.countdown = state.refreshSeconds;
+      fetchDashboard(true);
+    });
+    els.retryBtn.addEventListener("click", () => fetchDashboard(true));
+
+    els.searchInput.addEventListener("input", (event) => {
+      state.search = event.target.value;
+      renderSalesRows();
+    });
+
+    els.depoFilter.addEventListener("change", (event) => {
+      state.depo = event.target.value;
+      renderSalesRows();
+    });
+
+    $$("#salesTable thead button[data-sort]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const key = button.dataset.sort;
+        if (state.sortKey === key) {
+          state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
+        } else {
+          state.sortKey = key;
+          state.sortDir = key === "nama" ? "asc" : "desc";
+        }
+        renderSalesRows();
+      });
+    });
+
+    els.openCancelBtn.addEventListener("click", openCancelModal);
+    $$("[data-close-modal]").forEach((element) => {
+      element.addEventListener("click", closeCancelModal);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeCancelModal();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (
+        !document.hidden &&
+        state.data &&
+        Date.now() - state.lastFetch > state.refreshSeconds * 1000
+      ) {
+        fetchDashboard(false);
+      }
+    });
+  }
+
+  function startTicker() {
+    clearInterval(state.timer);
+    state.timer = setInterval(() => {
+      if (document.hidden) return;
+      state.countdown -= 1;
+      if (state.countdown <= 0) {
+        state.countdown = state.refreshSeconds;
+        fetchDashboard(false);
+      }
+      updateCountdown();
+    }, 1000);
+  }
+
+  bindEvents();
+  updateCountdown();
+  fetchDashboard(false);
+  startTicker();
+})();
+
+  </script>
+</body>
+</html>
